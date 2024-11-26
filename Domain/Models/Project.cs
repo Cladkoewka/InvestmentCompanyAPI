@@ -9,8 +9,9 @@ public class Project
     public decimal Profit { get; set; }
     public decimal Cost { get; set; }
     public DateTime Deadline { get; set; }
+    
     // Foreign Key
     public int CustomerId { get; set; }
-    // Foreign Key
     public int EditorId { get; set; }
+
 }

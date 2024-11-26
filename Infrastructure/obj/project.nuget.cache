@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "3Tc0LLTq2n/aORYR+vmHJd94sRbeQ9/tiUx5mllQKOtGbjbm7D2svWhGbVglt2dcBrwhOmcZCzzUXHseU/EgEA==",
+  "dgSpecHash": "t/Vl9zLkdeXPvINDRlriXIJwwI65aBfpSeLN+i5JkLQ5tu+7m4YWRSJs7eOdVxE7/wPJ+qghgCeNVoP8+F2CLg==",
   "success": true,
   "projectFilePath": "C:\\Users\\semen\\Desktop\\_\\Папки Осень 2024\\Учеба\\Базы данных 5 сем\\TR\\Investment company\\Infrastructure\\Infrastructure.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\semen\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.2\\microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.2\\microsoft.extensions.logging.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\npgsql\\9.0.1\\npgsql.9.0.1.nupkg.sha512"
+  ],
   "logs": []
 }
