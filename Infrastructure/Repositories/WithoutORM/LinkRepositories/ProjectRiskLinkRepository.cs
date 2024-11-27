@@ -1,3 +1,4 @@
+using System.Data;
 using Domain.Interfaces.LinkRepositories;
 using Npgsql;
 
@@ -9,31 +10,38 @@ public class ProjectRiskLinkRepository : BaseRepository, IProjectRiskLinkReposit
 
     public async Task AddLinkAsync(int projectId, int riskId)
     {
-        const string query = "INSERT INTO project_risk_links (project_id, risk_id) VALUES (@projectId, @riskId)";
+        const string procedure = "InsertProjectRiskLink"; // Имя процедуры
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@projectId", projectId);
-        command.Parameters.AddWithValue("@riskId", riskId);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_projectid", projectId);
+        command.Parameters.AddWithValue("p_riskid", riskId);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task RemoveLinkAsync(int projectId, int riskId)
     {
-        const string query = "DELETE FROM project_risk_links WHERE project_id = @projectId AND risk_id = @riskId";
+        const string procedure = "DeleteProjectRiskLink"; // Имя процедуры
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@projectId", projectId);
-        command.Parameters.AddWithValue("@riskId", riskId);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_projectid", projectId);
+        command.Parameters.AddWithValue("p_riskid", riskId);
 
         await command.ExecuteNonQueryAsync();
     }
 
+
     public async Task<IEnumerable<int>> GetRiskIdsByProjectIdAsync(int projectId)
     {
-        const string query = "SELECT risk_id FROM project_risk_links WHERE project_id = @projectId";
+        const string query = "SELECT riskid FROM projectrisklinks WHERE projectid = @projectId";
 
         var riskIds = new List<int>();
 
@@ -52,7 +60,7 @@ public class ProjectRiskLinkRepository : BaseRepository, IProjectRiskLinkReposit
 
     public async Task<IEnumerable<int>> GetProjectIdsByRiskIdAsync(int riskId)
     {
-        const string query = "SELECT project_id FROM project_risk_links WHERE risk_id = @riskId";
+        const string query = "SELECT projectid FROM projectrisklinks WHERE riskid = @riskId";
 
         var projectIds = new List<int>();
 

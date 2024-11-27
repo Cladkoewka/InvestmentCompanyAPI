@@ -1,3 +1,4 @@
+using System.Data;
 using Domain.Interfaces;
 using Domain.Models;
 using Npgsql;
@@ -11,7 +12,7 @@ public class EditorRepository : BaseRepository, IEditorRepository
     public async Task<Editor?> GetByIdAsync(int id)
     {
         const string query = @"
-            SELECT id, full_name, email, phone_number 
+            SELECT id, fullname, email, phonenumber 
             FROM editors 
             WHERE id = @id";
 
@@ -36,7 +37,7 @@ public class EditorRepository : BaseRepository, IEditorRepository
 
     public async Task<IEnumerable<Editor>> GetAllAsync()
     {
-        const string query = "SELECT id, full_name, email, phone_number FROM editors";
+        const string query = "SELECT id, fullname, email, phonenumber FROM editors";
 
         var editors = new List<Editor>();
 
@@ -60,43 +61,47 @@ public class EditorRepository : BaseRepository, IEditorRepository
 
     public async Task AddAsync(Editor entity)
     {
-        const string query = @"
-            INSERT INTO editors (full_name, email, phone_number) 
-            VALUES (@fullName, @email, @phoneNumber)";
+        const string procedure = "InsertEditor"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@fullName", entity.FullName);
-        command.Parameters.AddWithValue("@email", entity.Email);
-        command.Parameters.AddWithValue("@phoneNumber", entity.PhoneNumber);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_fullname", entity.FullName);
+        command.Parameters.AddWithValue("p_email", entity.Email);
+        command.Parameters.AddWithValue("p_phonenumber", entity.PhoneNumber);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task UpdateAsync(Editor entity)
     {
-        const string query = @"
-            UPDATE editors 
-            SET full_name = @fullName, email = @email, phone_number = @phoneNumber 
-            WHERE id = @id";
+        const string procedure = "UpdateEditor"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@fullName", entity.FullName);
-        command.Parameters.AddWithValue("@email", entity.Email);
-        command.Parameters.AddWithValue("@phoneNumber", entity.PhoneNumber);
-        command.Parameters.AddWithValue("@id", entity.Id);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_fullname", entity.FullName);
+        command.Parameters.AddWithValue("p_email", entity.Email);
+        command.Parameters.AddWithValue("p_phonenumber", entity.PhoneNumber);
+        command.Parameters.AddWithValue("p_id", entity.Id);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task DeleteAsync(Editor entity)
     {
-        const string query = "DELETE FROM editors WHERE id = @id";
+        const string procedure = "DeleteEditor"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", entity.Id);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_id", entity.Id);
 
         await command.ExecuteNonQueryAsync();
     }
@@ -104,7 +109,7 @@ public class EditorRepository : BaseRepository, IEditorRepository
     public async Task<Editor?> GetByEmailAsync(string email)
     {
         const string query = @"
-            SELECT id, full_name, email, phone_number 
+            SELECT id, fullname, email, phonenumber 
             FROM editors 
             WHERE email = @email";
 

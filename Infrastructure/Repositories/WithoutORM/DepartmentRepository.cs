@@ -1,3 +1,4 @@
+using System.Data;
 using Domain.Interfaces;
 using Domain.Models;
 using Npgsql;
@@ -53,34 +54,43 @@ public class DepartmentRepository : BaseRepository, IDepartmentRepository
 
     public async Task AddAsync(Department entity)
     {
-        const string query = "INSERT INTO departments (name) VALUES (@name)";
+        const string procedure = "InsertDepartment"; // Хранимая процедура для обновления
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@name", entity.Name);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_name", entity.Name);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task UpdateAsync(Department entity)
     {
-        const string query = "UPDATE departments SET name = @name WHERE id = @id";
+        const string procedure = "UpdateDepartment"; // Хранимая процедура для обновления
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@name", entity.Name);
-        command.Parameters.AddWithValue("@id", entity.Id);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_name", entity.Name);
+        command.Parameters.AddWithValue("p_id", entity.Id);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task DeleteAsync(Department entity)
     {
-        const string query = "DELETE FROM departments WHERE id = @id";
+        const string procedure = "DeleteDepartment"; // Хранимая процедура для обновления
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", entity.Id);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_id", entity.Id);
 
         await command.ExecuteNonQueryAsync();
     }

@@ -1,3 +1,4 @@
+using System.Data;
 using Domain.Interfaces;
 using Domain.Models;
 using Npgsql;
@@ -55,41 +56,45 @@ public class RiskRepository : BaseRepository, IRiskRepository
 
     public async Task AddAsync(Risk entity)
     {
-        const string query = @"
-            INSERT INTO risks (type, grade) 
-            VALUES (@type, @grade)";
+        const string procedure = "InsertRisk"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@type", entity.Type);
-        command.Parameters.AddWithValue("@grade", entity.Grade);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_type", entity.Type);
+        command.Parameters.AddWithValue("p_grade", entity.Grade);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task UpdateAsync(Risk entity)
     {
-        const string query = @"
-            UPDATE risks 
-            SET type = @type, grade = @grade 
-            WHERE id = @id";
+        const string procedure = "UpdateRisk"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", entity.Id);
-        command.Parameters.AddWithValue("@type", entity.Type);
-        command.Parameters.AddWithValue("@grade", entity.Grade);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_id", entity.Id);
+        command.Parameters.AddWithValue("p_type", entity.Type);
+        command.Parameters.AddWithValue("p_grade", entity.Grade);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task DeleteAsync(Risk entity)
     {
-        const string query = "DELETE FROM risks WHERE id = @id";
+        const string procedure = "DeleteRisk"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", entity.Id);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_id", entity.Id);
 
         await command.ExecuteNonQueryAsync();
     }

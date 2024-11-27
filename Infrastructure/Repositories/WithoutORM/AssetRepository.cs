@@ -1,3 +1,4 @@
+using System.Data;
 using Domain.Interfaces;
 using Domain.Models;
 using Npgsql;
@@ -6,7 +7,9 @@ namespace Infrastructure.Repositories.WithoutORM;
 
 public class AssetRepository : BaseRepository, IAssetRepository
 {
-    public AssetRepository(string connectionString) : base(connectionString) { }
+    public AssetRepository(string connectionString) : base(connectionString)
+    {
+    }
 
     public async Task<Asset?> GetByIdAsync(int id)
     {
@@ -53,34 +56,43 @@ public class AssetRepository : BaseRepository, IAssetRepository
 
     public async Task AddAsync(Asset entity)
     {
-        const string query = "INSERT INTO assets (name) VALUES (@name)";
+        const string procedure = "InsertAsset"; // Имя процедуры
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@name", entity.Name);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_name", entity.Name);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task UpdateAsync(Asset entity)
     {
-        const string query = "UPDATE assets SET name = @name WHERE id = @id";
+        const string procedure = "UpdateAsset"; // Хранимая процедура для обновления
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@name", entity.Name);
-        command.Parameters.AddWithValue("@id", entity.Id);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_name", entity.Name);
+        command.Parameters.AddWithValue("p_id", entity.Id);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task DeleteAsync(Asset entity)
     {
-        const string query = "DELETE FROM assets WHERE id = @id";
+        const string procedure = "DeleteAsset"; // Хранимая процедура для удаления
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", entity.Id);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_id", entity.Id);
 
         await command.ExecuteNonQueryAsync();
     }
@@ -88,7 +100,7 @@ public class AssetRepository : BaseRepository, IAssetRepository
     public async Task<IEnumerable<Asset>> GetByNameAsync(string name)
     {
         const string query = "SELECT id, name FROM assets WHERE name = @name";
-        
+
         var assets = new List<Asset>();
 
         await using var connection = await CreateConnectionAsync();

@@ -1,3 +1,4 @@
+using System.Data;
 using Domain.Interfaces;
 using Domain.Models;
 using Npgsql;
@@ -10,7 +11,7 @@ public class EmployeeRepository : BaseRepository, IEmployeeRepository
 
     public async Task<Employee?> GetByIdAsync(int id)
     {
-        const string query = "SELECT id, first_name, last_name, department_id FROM employees WHERE id = @id";
+        const string query = "SELECT id, firstname, lastname, departmentid FROM employees WHERE id = @id";
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(query, connection);
@@ -33,7 +34,7 @@ public class EmployeeRepository : BaseRepository, IEmployeeRepository
 
     public async Task<IEnumerable<Employee>> GetAllAsync()
     {
-        const string query = "SELECT id, first_name, last_name, department_id FROM employees";
+        const string query = "SELECT id, firstname, lastname, departmentid FROM employees";
 
         var employees = new List<Employee>();
 
@@ -57,50 +58,54 @@ public class EmployeeRepository : BaseRepository, IEmployeeRepository
 
     public async Task AddAsync(Employee entity)
     {
-        const string query = @"
-            INSERT INTO employees (first_name, last_name, department_id) 
-            VALUES (@firstName, @lastName, @departmentId)";
+        const string procedure = "InsertEmployee"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@firstName", entity.FirstName);
-        command.Parameters.AddWithValue("@lastName", entity.LastName);
-        command.Parameters.AddWithValue("@departmentId", entity.DepartmentId);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_firstname", entity.FirstName);
+        command.Parameters.AddWithValue("p_lastname", entity.LastName);
+        command.Parameters.AddWithValue("p_departmentid", entity.DepartmentId);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task UpdateAsync(Employee entity)
     {
-        const string query = @"
-            UPDATE employees 
-            SET first_name = @firstName, last_name = @lastName, department_id = @departmentId 
-            WHERE id = @id";
+        const string procedure = "UpdateEmployee"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@firstName", entity.FirstName);
-        command.Parameters.AddWithValue("@lastName", entity.LastName);
-        command.Parameters.AddWithValue("@departmentId", entity.DepartmentId);
-        command.Parameters.AddWithValue("@id", entity.Id);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_firstname", entity.FirstName);
+        command.Parameters.AddWithValue("p_lastname", entity.LastName);
+        command.Parameters.AddWithValue("p_departmentid", entity.DepartmentId);
+        command.Parameters.AddWithValue("p_id", entity.Id);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task DeleteAsync(Employee entity)
     {
-        const string query = "DELETE FROM employees WHERE id = @id";
+        const string procedure = "DeleteEmployee"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", entity.Id);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_id", entity.Id);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task<IEnumerable<Employee>> GetByDepartmentIdAsync(int departmentId)
     {
-        const string query = "SELECT id, first_name, last_name, department_id FROM employees WHERE department_id = @departmentId";
+        const string query = "SELECT id, firstname, lastname, departmentid FROM employees WHERE departmentid = @departmentId";
 
         var employees = new List<Employee>();
         

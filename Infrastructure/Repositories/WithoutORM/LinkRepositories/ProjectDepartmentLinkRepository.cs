@@ -1,3 +1,4 @@
+using System.Data;
 using Domain.Interfaces.LinkRepositories;
 using Npgsql;
 
@@ -9,31 +10,38 @@ public class ProjectDepartmentLinkRepository : BaseRepository, IProjectDepartmen
 
     public async Task AddLinkAsync(int projectId, int departmentId)
     {
-        const string query = "INSERT INTO project_department_links (project_id, department_id) VALUES (@projectId, @departmentId)";
+        const string procedure = "InsertProjectDepartmentLink"; // Имя процедуры
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@projectId", projectId);
-        command.Parameters.AddWithValue("@departmentId", departmentId);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_projectid", projectId);
+        command.Parameters.AddWithValue("p_departmentid", departmentId);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task RemoveLinkAsync(int projectId, int departmentId)
     {
-        const string query = "DELETE FROM project_department_links WHERE project_id = @projectId AND department_id = @departmentId";
+        const string procedure = "DeleteProjectDepartmentLink"; // Имя процедуры
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@projectId", projectId);
-        command.Parameters.AddWithValue("@departmentId", departmentId);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_projectid", projectId);
+        command.Parameters.AddWithValue("p_departmentid", departmentId);
 
         await command.ExecuteNonQueryAsync();
     }
 
+
     public async Task<IEnumerable<int>> GetDepartmentIdsByProjectIdAsync(int projectId)
     {
-        const string query = "SELECT department_id FROM project_department_links WHERE project_id = @projectId";
+        const string query = "SELECT departmentid FROM projectdepartmentlinks WHERE projectid = @projectId";
 
         var departmentIds = new List<int>();
 
@@ -52,7 +60,7 @@ public class ProjectDepartmentLinkRepository : BaseRepository, IProjectDepartmen
 
     public async Task<IEnumerable<int>> GetProjectIdsByDepartmentIdAsync(int departmentId)
     {
-        const string query = "SELECT project_id FROM project_department_links WHERE department_id = @departmentId";
+        const string query = "SELECT projectid FROM projectdepartmentlinks WHERE departmentid = @departmentId";
 
         var projectIds = new List<int>();
 

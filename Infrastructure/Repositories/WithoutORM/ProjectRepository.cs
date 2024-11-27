@@ -1,3 +1,4 @@
+using System.Data;
 using Domain.Interfaces;
 using Domain.Models;
 using Npgsql;
@@ -10,7 +11,7 @@ public class ProjectRepository : BaseRepository, IProjectRepository
 
     public async Task<Project?> GetByIdAsync(int id)
     {
-        const string query = "SELECT id, name, status, profit, cost, deadline, customer_id, editor_id FROM projects WHERE id = @id";
+        const string query = "SELECT id, name, status, profit, cost, deadline, customerid, editorid FROM projects WHERE id = @id";
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(query, connection);
@@ -37,7 +38,7 @@ public class ProjectRepository : BaseRepository, IProjectRepository
 
     public async Task<IEnumerable<Project>> GetAllAsync()
     {
-        const string query = "SELECT id, name, status, profit, cost, deadline, customer_id, editor_id FROM projects";
+        const string query = "SELECT id, name, status, profit, cost, deadline, customerid, editorid FROM projects";
 
         var projects = new List<Project>();
 
@@ -65,52 +66,55 @@ public class ProjectRepository : BaseRepository, IProjectRepository
 
     public async Task AddAsync(Project entity)
     {
-        const string query = @"
-            INSERT INTO projects (name, status, profit, cost, deadline, customer_id, editor_id) 
-            VALUES (@name, @status, @profit, @cost, @deadline, @customerId, @editorId)";
+        const string procedure = "InsertProject"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@name", entity.Name);
-        command.Parameters.AddWithValue("@status", entity.Status);
-        command.Parameters.AddWithValue("@profit", entity.Profit);
-        command.Parameters.AddWithValue("@cost", entity.Cost);
-        command.Parameters.AddWithValue("@deadline", entity.Deadline);
-        command.Parameters.AddWithValue("@customerId", entity.CustomerId);
-        command.Parameters.AddWithValue("@editorId", entity.EditorId);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_name", entity.Name);
+        command.Parameters.AddWithValue("p_status", entity.Status);
+        command.Parameters.AddWithValue("p_profit", entity.Profit);
+        command.Parameters.AddWithValue("p_cost", entity.Cost);
+        command.Parameters.AddWithValue("p_deadline", entity.Deadline);
+        command.Parameters.AddWithValue("p_customerid", entity.CustomerId);
+        command.Parameters.AddWithValue("p_editorid", entity.EditorId);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task UpdateAsync(Project entity)
     {
-        const string query = @"
-            UPDATE projects 
-            SET name = @name, status = @status, profit = @profit, cost = @cost, deadline = @deadline, 
-                customer_id = @customerId, editor_id = @editorId
-            WHERE id = @id";
+        const string procedure = "UpdateProject"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", entity.Id);
-        command.Parameters.AddWithValue("@name", entity.Name);
-        command.Parameters.AddWithValue("@status", entity.Status);
-        command.Parameters.AddWithValue("@profit", entity.Profit);
-        command.Parameters.AddWithValue("@cost", entity.Cost);
-        command.Parameters.AddWithValue("@deadline", entity.Deadline);
-        command.Parameters.AddWithValue("@customerId", entity.CustomerId);
-        command.Parameters.AddWithValue("@editorId", entity.EditorId);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_id", entity.Id);
+        command.Parameters.AddWithValue("p_name", entity.Name);
+        command.Parameters.AddWithValue("p_status", entity.Status);
+        command.Parameters.AddWithValue("p_profit", entity.Profit);
+        command.Parameters.AddWithValue("p_cost", entity.Cost);
+        command.Parameters.AddWithValue("p_deadline", entity.Deadline);
+        command.Parameters.AddWithValue("p_customerid", entity.CustomerId);
+        command.Parameters.AddWithValue("p_editorid", entity.EditorId);
 
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task DeleteAsync(Project entity)
     {
-        const string query = "DELETE FROM projects WHERE id = @id";
+        const string procedure = "DeleteProject"; 
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", entity.Id);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_id", entity.Id);
 
         await command.ExecuteNonQueryAsync();
     }
@@ -118,15 +122,15 @@ public class ProjectRepository : BaseRepository, IProjectRepository
     public async Task<IEnumerable<Project>> GetByCustomerIdAsync(int customerId)
     {
         const string query = @"
-            SELECT id, name, status, profit, cost, deadline, customer_id, editor_id 
+            SELECT id, name, status, profit, cost, deadline, customerid, editorid 
             FROM projects 
-            WHERE customer_id = @customerId";
+            WHERE customerid = @customerId";
 
         var projects = new List<Project>();
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@customerId", customerId);
+        command.Parameters.AddWithValue("@customerid", customerId);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -150,15 +154,15 @@ public class ProjectRepository : BaseRepository, IProjectRepository
     public async Task<IEnumerable<Project>> GetByEditorIdAsync(int editorId)
     {
         const string query = @"
-            SELECT id, name, status, profit, cost, deadline, customer_id, editor_id 
+            SELECT id, name, status, profit, cost, deadline, customerid, editorid 
             FROM projects 
-            WHERE editor_id = @editorId";
+            WHERE editorid = @editorId";
 
         var projects = new List<Project>();
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@editorId", editorId);
+        command.Parameters.AddWithValue("@editorid", editorId);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())

@@ -1,3 +1,4 @@
+using System.Data;
 using Domain.Interfaces.LinkRepositories;
 using Npgsql;
 
@@ -9,31 +10,40 @@ public class ProjectAssetLinkRepository : BaseRepository, IProjectAssetLinkRepos
 
     public async Task AddLinkAsync(int projectId, int assetId)
     {
-        const string query = "INSERT INTO project_assets (project_id, asset_id) VALUES (@projectId, @assetId)";
+        const string procedure = "InsertProjectAssetLink"; // Имя процедуры
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@projectId", projectId);
-        command.Parameters.AddWithValue("@assetId", assetId);
-
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        
+        
+        command.Parameters.AddWithValue("p_projectid", projectId);
+        command.Parameters.AddWithValue("p_assetid", assetId);
+        
         await command.ExecuteNonQueryAsync();
     }
 
     public async Task RemoveLinkAsync(int projectId, int assetId)
     {
-        const string query = "DELETE FROM project_assets WHERE project_id = @projectId AND asset_id = @assetId";
+        const string procedure = "DeleteProjectAssetLink"; // Имя процедуры
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@projectId", projectId);
-        command.Parameters.AddWithValue("@assetId", assetId);
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_projectid", projectId);
+        command.Parameters.AddWithValue("p_assetid", assetId);
 
         await command.ExecuteNonQueryAsync();
     }
 
+
     public async Task<IEnumerable<int>> GetAssetIdsByProjectIdAsync(int projectId)
     {
-        const string query = "SELECT asset_id FROM project_assets WHERE project_id = @projectId";
+        const string query = "SELECT assetid FROM ProjectAssetLinks WHERE projectid = @projectId";
 
         var assetIds = new List<int>();
 
@@ -52,7 +62,7 @@ public class ProjectAssetLinkRepository : BaseRepository, IProjectAssetLinkRepos
 
     public async Task<IEnumerable<int>> GetProjectIdsByAssetIdAsync(int assetId)
     {
-        const string query = "SELECT project_id FROM project_assets WHERE asset_id = @assetId";
+        const string query = "SELECT projectid FROM ProjectAssetLinks WHERE assetid = @assetId";
 
         var projectIds = new List<int>();
 
