@@ -37,16 +37,28 @@ namespace API.Controllers
 
         // Добавить новый риск
         [HttpPost]
-        public async Task<ActionResult<RiskGetDto>> AddAsync(RiskCreateDto dto)
+        public async Task<ActionResult<RiskGetDto>> AddAsync([FromBody] RiskCreateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var newRisk = await _riskService.AddAsync(dto);
             return StatusCode(201, newRisk);
         }
 
         // Обновить риск
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateAsync(int id, RiskUpdateDto dto)
+        public async Task<ActionResult> UpdateAsync(int id, [FromBody] RiskUpdateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var result = await _riskService.UpdateAsync(id, dto);
             if (!result)
                 return NotFound();

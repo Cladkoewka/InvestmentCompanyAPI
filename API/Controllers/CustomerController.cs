@@ -38,14 +38,26 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<CustomerGetDto>> AddAsync([FromBody] CustomerCreateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var customer = await _customerService.AddAsync(dto);
             return StatusCode(201, customer);
         }
 
         // Обновить клиента
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateAsync(int id, CustomerUpdateDto dto)
+        public async Task<ActionResult> UpdateAsync(int id, [FromBody] CustomerUpdateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var isUpdated = await _customerService.UpdateAsync(id, dto);
             if (!isUpdated)
                 return NotFound(); // Возвращаем 404, если клиент не найден

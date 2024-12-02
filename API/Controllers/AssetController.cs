@@ -40,14 +40,26 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<AssetGetDto>> AddAsync([FromBody] AssetCreateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var asset = await _assetService.AddAsync(dto);
             return StatusCode(201, asset);
         }
 
         // Обновить актив
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateAsync(int id, AssetUpdateDto dto)
+        public async Task<ActionResult> UpdateAsync(int id, [FromBody] AssetUpdateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var isUpdated = await _assetService.UpdateAsync(id, dto);
             if (!isUpdated)
                 return NotFound(); // Возвращаем 404, если актив не найден

@@ -37,16 +37,28 @@ namespace API.Controllers
 
         // Добавить новый проект
         [HttpPost]
-        public async Task<ActionResult<ProjectGetDto>> AddAsync(ProjectCreateDto dto)
+        public async Task<ActionResult<ProjectGetDto>> AddAsync([FromBody] ProjectCreateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var project = await _projectService.AddAsync(dto);
             return StatusCode(201, project);
         }
 
         // Обновить проект
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateAsync(int id, ProjectUpdateDto dto)
+        public async Task<ActionResult> UpdateAsync(int id, [FromBody] ProjectUpdateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var success = await _projectService.UpdateAsync(id, dto);
             if (!success)
                 return NotFound();

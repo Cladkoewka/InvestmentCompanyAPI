@@ -41,3 +41,6 @@ C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данн
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\Application.dll
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\Application.pdb
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\obj\Debug\net8.0\API.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\FluentValidation.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\FluentValidation.AspNetCore.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll

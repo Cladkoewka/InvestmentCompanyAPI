@@ -38,6 +38,12 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<EditorGetDto>> AddAsync([FromBody] EditorCreateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var editor = await _editorService.AddAsync(dto);
             return StatusCode(201, editor);
         }
@@ -46,6 +52,12 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateAsync(int id, [FromBody] EditorUpdateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var success = await _editorService.UpdateAsync(id, dto);
             if (!success)
                 return NotFound();

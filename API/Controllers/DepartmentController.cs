@@ -49,6 +49,12 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<DepartmentGetDto>> AddAsync([FromBody] DepartmentCreateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var department = await _departmentService.AddAsync(dto);
             return StatusCode(201, department);
         }
@@ -57,6 +63,12 @@ namespace API.Controllers
         [HttpPut("{id:int}")]
         public async Task<ActionResult> UpdateAsync(int id, [FromBody] DepartmentUpdateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var isUpdated = await _departmentService.UpdateAsync(id, dto);
             if (!isUpdated)
                 return NotFound();

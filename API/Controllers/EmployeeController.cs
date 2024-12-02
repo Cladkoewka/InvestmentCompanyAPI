@@ -38,6 +38,12 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] EmployeeCreateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var employee = await _employeeService.AddAsync(dto);
             return StatusCode(201, employee);
         }
@@ -46,6 +52,12 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] EmployeeUpdateDto dto)
         {
+            // Проверка валидации
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var result = await _employeeService.UpdateAsync(id, dto);
             if (!result)
                 return NotFound();
