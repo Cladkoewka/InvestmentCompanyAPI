@@ -1,89 +1,76 @@
+using Application.DTOs;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Interfaces;
-using Domain.Models;
 
 namespace API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class RiskController : ControllerBase
     {
-        private readonly IRiskRepository _riskRepository;
+        private readonly IRiskService _riskService;
 
-        public RiskController(IRiskRepository riskRepository)
+        public RiskController(IRiskService riskService)
         {
-            _riskRepository = riskRepository;
+            _riskService = riskService;
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> TestRiskRepositoryMethods()
+        // Получить все риски
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<RiskGetDto>>> GetAllAsync()
         {
-            var result = string.Empty;
+            var risks = await _riskService.GetAllAsync();
+            return Ok(risks);
+        }
+        
+        // Получить риск по ID
+        [HttpGet("{id}")]
+        public async Task<ActionResult<RiskGetDto>> GetByIdAsync(int id)
+        {
+            var risk = await _riskService.GetByIdAsync(id);
+            if (risk == null)
+                return NotFound();
 
-            // Тестирование GetByIdAsync
-            var riskById = await _riskRepository.GetByIdAsync(1);
-            result += riskById is not null 
-                ? $"Risk by ID: {riskById.Type}, Grade: {riskById.Grade}" 
-                : "Risk not found";
-            result += "<br>------------<br>";
-            
-            // Тестирование GetAllAsync
-            var allRisks = await _riskRepository.GetAllAsync();
-            result += "<br>All risks:<br>";
-            foreach (var risk in allRisks)
-            {
-                result += $"Risk: {risk.Type}, Grade: {risk.Grade}<br>";
-            }
-            result += "<br>------------<br>";
+            return Ok(risk);
+        }
+        
 
-            // Тестирование AddAsync
-            var newRisk = new Risk { Type = "Operational", Grade = 3 };
-            await _riskRepository.AddAsync(newRisk);
-            result += "Added new risk<br>";
-            
-            allRisks = await _riskRepository.GetAllAsync();
-            result += "<br>All risks after adding:<br>";
-            foreach (var risk in allRisks)
-            {
-                result += $"Risk: {risk.Type}, Grade: {risk.Grade}<br>";
-            }
-            result += "<br>------------<br>";
+        // Добавить новый риск
+        [HttpPost]
+        public async Task<ActionResult<RiskGetDto>> AddAsync(RiskCreateDto dto)
+        {
+            var newRisk = await _riskService.AddAsync(dto);
+            return StatusCode(201, newRisk);
+        }
 
-            // Тестирование UpdateAsync
-            var riskToUpdate = new Risk { Id = 2, Type = "Financial", Grade = 4 };
-            await _riskRepository.UpdateAsync(riskToUpdate);
-            result += "Updated risk<br>";
-            
-            allRisks = await _riskRepository.GetAllAsync();
-            result += "<br>All risks after update:<br>";
-            foreach (var risk in allRisks)
-            {
-                result += $"Risk: {risk.Type}, Grade: {risk.Grade}<br>";
-            }
-            result += "<br>------------<br>";
+        // Обновить риск
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync(int id, RiskUpdateDto dto)
+        {
+            var result = await _riskService.UpdateAsync(id, dto);
+            if (!result)
+                return NotFound();
 
-            // Тестирование DeleteAsync
-            await _riskRepository.DeleteAsync(riskToUpdate);
-            result += "Deleted risk<br>";
-            
-            allRisks = await _riskRepository.GetAllAsync();
-            result += "<br>All risks after deletion:<br>";
-            foreach (var risk in allRisks)
-            {
-                result += $"Risk: {risk.Type}, Grade: {risk.Grade}<br>";
-            }
-            result += "<br>------------<br>";
+            return NoContent();
+        }
 
-            // Тестирование GetByGradeAsync
-            var risksByGrade = await _riskRepository.GetByGradeAsync(3);
-            result += "Risks with grade 3:<br>";
-            foreach (var risk in risksByGrade)
-            {
-                result += $"Risk: {risk.Type}, Grade: {risk.Grade}<br>";
-            }
-            result += "<br>------------<br>";
+        // Удалить риск
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAsync(int id)
+        {
+            var result = await _riskService.DeleteAsync(id);
+            if (!result)
+                return NotFound();
 
-            return Content(result, "text/html");
+            return NoContent();
+        }
+
+        // Получить риски по grade
+        [HttpGet("by-grade/{grade}")]
+        public async Task<ActionResult<IEnumerable<RiskGetDto>>> GetByGradeAsync(int grade)
+        {
+            var risks = await _riskService.GetByGradeAsync(grade);
+            return Ok(risks);
         }
     }
 }

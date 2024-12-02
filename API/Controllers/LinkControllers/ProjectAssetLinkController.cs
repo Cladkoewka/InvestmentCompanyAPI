@@ -14,44 +14,64 @@ namespace API.Controllers.LinkControllers
             _projectAssetLinkRepository = projectAssetLinkRepository;
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> TestProjectAssetLinkRepositoryMethods()
+        // Добавить связь между проектом и активом
+        [HttpPost]
+        public async Task<IActionResult> AddLinkAsync(int projectId, int assetId)
         {
-            var result = "<h2>Testing Project-Asset Link Repository</h2>";
-
-            
-            // Тестирование AddLinkAsync
-            var projectId = 1;
-            var assetId = 5;
-            await _projectAssetLinkRepository.RemoveLinkAsync(projectId, assetId);
-            await _projectAssetLinkRepository.AddLinkAsync(projectId, assetId);
-            result += $"Added link between project {projectId} and asset {assetId}<br>";
-            result += "<br>------------<br>";
-
-            // Тестирование GetAssetIdsByProjectIdAsync
-            var assetIds = await _projectAssetLinkRepository.GetAssetIdsByProjectIdAsync(projectId);
-            result += $"Assets linked to project {projectId}:<br>";
-            foreach (var id in assetIds)
+            try
             {
-                result += $"Asset ID: {id}<br>";
+                await _projectAssetLinkRepository.AddLinkAsync(projectId, assetId);
+                return Ok(new { Message = $"Successfully linked project {projectId} and asset {assetId}" });
             }
-            result += "<br>------------<br>";
-
-            // Тестирование GetProjectIdsByAssetIdAsync
-            var projectIds = await _projectAssetLinkRepository.GetProjectIdsByAssetIdAsync(assetId);
-            result += $"Projects linked to asset {assetId}:<br>";
-            foreach (var id in projectIds)
+            catch (Exception ex)
             {
-                result += $"Project ID: {id}<br>";
+                return BadRequest(new { Message = "Failed to add link", Error = ex.Message });
             }
-            result += "<br>------------<br>";
+        }
 
-            // Тестирование RemoveLinkAsync
-            await _projectAssetLinkRepository.RemoveLinkAsync(projectId, assetId);
-            result += $"Removed link between project {projectId} and asset {assetId}<br>";
-            result += "<br>------------<br>";
+        // Удалить связь между проектом и активом
+        [HttpDelete]
+        public async Task<IActionResult> RemoveLinkAsync(int projectId, int assetId)
+        {
+            try
+            {
+                await _projectAssetLinkRepository.RemoveLinkAsync(projectId, assetId);
+                return Ok(new { Message = $"Successfully removed link between project {projectId} and asset {assetId}" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to remove link", Error = ex.Message });
+            }
+        }
 
-            return Content(result, "text/html");
+        // Получить список активов по ID проекта
+        [HttpGet("project/{projectId}")]
+        public async Task<IActionResult> GetAssetsByProjectIdAsync(int projectId)
+        {
+            try
+            {
+                var assetIds = await _projectAssetLinkRepository.GetAssetIdsByProjectIdAsync(projectId);
+                return Ok(new { ProjectId = projectId, AssetIds = assetIds });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to retrieve assets", Error = ex.Message });
+            }
+        }
+
+        // Получить список проектов по ID актива
+        [HttpGet("asset/{assetId}")]
+        public async Task<IActionResult> GetProjectsByAssetIdAsync(int assetId)
+        {
+            try
+            {
+                var projectIds = await _projectAssetLinkRepository.GetProjectIdsByAssetIdAsync(assetId);
+                return Ok(new { AssetId = assetId, ProjectIds = projectIds });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to retrieve projects", Error = ex.Message });
+            }
         }
     }
 }

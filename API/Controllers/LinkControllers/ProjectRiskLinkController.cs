@@ -14,44 +14,64 @@ namespace API.Controllers.LinkControllers
             _projectRiskLinkRepository = projectRiskLinkRepository;
         }
 
-        // Тестовый метод для проверки работы репозитория
-        [HttpGet("test")]
-        public async Task<IActionResult> TestProjectRiskLinkRepositoryMethods()
+        // Добавить связь между проектом и риском
+        [HttpPost]
+        public async Task<IActionResult> AddLinkAsync(int projectId, int riskId)
         {
-            var result = "<h2>Testing Project-Risk Link Repository</h2>";
-
-            // Тестирование AddLinkAsync
-            var projectId = 1;
-            var riskId = 5;
-            await _projectRiskLinkRepository.RemoveLinkAsync(projectId, riskId);
-            await _projectRiskLinkRepository.AddLinkAsync(projectId, riskId);
-            result += $"Added link between project {projectId} and risk {riskId}<br>";
-            result += "<br>------------<br>";
-
-            // Тестирование GetRiskIdsByProjectIdAsync
-            var riskIds = await _projectRiskLinkRepository.GetRiskIdsByProjectIdAsync(projectId);
-            result += $"Risks linked to project {projectId}:<br>";
-            foreach (var id in riskIds)
+            try
             {
-                result += $"Risk ID: {id}<br>";
+                await _projectRiskLinkRepository.AddLinkAsync(projectId, riskId);
+                return Ok(new { Message = $"Successfully linked project {projectId} and risk {riskId}" });
             }
-            result += "<br>------------<br>";
-
-            // Тестирование GetProjectIdsByRiskIdAsync
-            var projectIds = await _projectRiskLinkRepository.GetProjectIdsByRiskIdAsync(riskId);
-            result += $"Projects linked to risk {riskId}:<br>";
-            foreach (var id in projectIds)
+            catch (Exception ex)
             {
-                result += $"Project ID: {id}<br>";
+                return BadRequest(new { Message = "Failed to add link", Error = ex.Message });
             }
-            result += "<br>------------<br>";
+        }
 
-            // Тестирование RemoveLinkAsync
-            await _projectRiskLinkRepository.RemoveLinkAsync(projectId, riskId);
-            result += $"Removed link between project {projectId} and risk {riskId}<br>";
-            result += "<br>------------<br>";
+        // Удалить связь между проектом и риском
+        [HttpDelete]
+        public async Task<IActionResult> RemoveLinkAsync(int projectId, int riskId)
+        {
+            try
+            {
+                await _projectRiskLinkRepository.RemoveLinkAsync(projectId, riskId);
+                return Ok(new { Message = $"Successfully removed link between project {projectId} and risk {riskId}" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to remove link", Error = ex.Message });
+            }
+        }
 
-            return Content(result, "text/html");
+        // Получить список рисков по ID проекта
+        [HttpGet("project/{projectId}")]
+        public async Task<IActionResult> GetRisksByProjectIdAsync(int projectId)
+        {
+            try
+            {
+                var riskIds = await _projectRiskLinkRepository.GetRiskIdsByProjectIdAsync(projectId);
+                return Ok(new { ProjectId = projectId, RiskIds = riskIds });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to retrieve risks", Error = ex.Message });
+            }
+        }
+
+        // Получить список проектов по ID риска
+        [HttpGet("risk/{riskId}")]
+        public async Task<IActionResult> GetProjectsByRiskIdAsync(int riskId)
+        {
+            try
+            {
+                var projectIds = await _projectRiskLinkRepository.GetProjectIdsByRiskIdAsync(riskId);
+                return Ok(new { RiskId = riskId, ProjectIds = projectIds });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to retrieve projects", Error = ex.Message });
+            }
         }
     }
 }

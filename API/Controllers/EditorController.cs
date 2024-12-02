@@ -1,92 +1,78 @@
+using Application.DTOs;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Interfaces;
-using Domain.Models;
 
 namespace API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class EditorController : ControllerBase
     {
-        private readonly IEditorRepository _editorRepository;
+        private readonly IEditorService _editorService;
 
-        public EditorController(IEditorRepository editorRepository)
+        public EditorController(IEditorService editorService)
         {
-            _editorRepository = editorRepository;
+            _editorService = editorService;
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> TestEditorRepositoryMethods()
+        // Получить всех редакторов
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<EditorGetDto>>> GetAllAsync()
         {
-            var result = string.Empty;
+            var editors = await _editorService.GetAllAsync();
+            return Ok(editors);
+        }
+        
+        // Получить редактора по ID
+        [HttpGet("{id}")]
+        public async Task<ActionResult<EditorGetDto>> GetByIdAsync(int id)
+        {
+            var editor = await _editorService.GetByIdAsync(id);
+            if (editor == null)
+                return NotFound();
 
-            // Тестирование GetByIdAsync
-            var editorById = await _editorRepository.GetByIdAsync(1);
-            result += editorById is not null 
-                ? $"Editor by ID: {editorById.FullName}" 
-                : "Editor not found";
-            result += "<br>------------<br>";
-            
-            // Тестирование GetAllAsync
-            var allEditors = await _editorRepository.GetAllAsync();
-            result += "<br>All editors:<br>";
-            foreach (var editor in allEditors)
-            {
-                result += $"Editor: {editor.FullName} ({editor.Email})<br>";
-            }
-            result += "<br>------------<br>";
+            return Ok(editor);
+        }
 
-            // Тестирование AddAsync
-            var newEditor = new Editor { FullName = "John Doe", Email = "john.doe@example.com", PhoneNumber = "123-456-7890" };
-            await _editorRepository.AddAsync(newEditor);
-            result += "Added new editor<br>";
-            
-            allEditors = await _editorRepository.GetAllAsync();
-            result += "<br>All editors after adding:<br>";
-            foreach (var editor in allEditors)
-            {
-                result += $"Editor: {editor.FullName} ({editor.Email})<br>";
-            }
-            result += "<br>------------<br>";
+        // Добавить нового редактора
+        [HttpPost]
+        public async Task<ActionResult<EditorGetDto>> AddAsync([FromBody] EditorCreateDto dto)
+        {
+            var editor = await _editorService.AddAsync(dto);
+            return StatusCode(201, editor);
+        }
 
-            // Тестирование UpdateAsync
-            var editorToUpdate = new Editor { Id = 1, FullName = "John Updated", Email = "john.updated@example.com", PhoneNumber = "987-654-3210" };
-            await _editorRepository.UpdateAsync(editorToUpdate);
-            result += "Updated editor<br>";
-            
-            allEditors = await _editorRepository.GetAllAsync();
-            result += "<br>All editors after update:<br>";
-            foreach (var editor in allEditors)
-            {
-                result += $"Editor: {editor.FullName} ({editor.Email})<br>";
-            }
-            result += "<br>------------<br>";
+        // Обновить редактора
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync(int id, [FromBody] EditorUpdateDto dto)
+        {
+            var success = await _editorService.UpdateAsync(id, dto);
+            if (!success)
+                return NotFound();
 
-            // Тестирование DeleteAsync
-            await _editorRepository.DeleteAsync(editorToUpdate);
-            result += "Deleted editor<br>";
-            
-            allEditors = await _editorRepository.GetAllAsync();
-            result += "<br>All editors after deletion:<br>";
-            foreach (var editor in allEditors)
-            {
-                result += $"Editor: {editor.FullName} ({editor.Email})<br>";
-            }
-            result += "<br>------------<br>";
+            return NoContent();
+        }
 
-            // Тестирование GetByEmailAsync
-            var editorByEmail = await _editorRepository.GetByEmailAsync("john.doe@example.com");
-            result += "Found editor by email:<br>";
-            if (editorByEmail != null)
-            {
-                result += $"Found editor by email: {editorByEmail.FullName} ({editorByEmail.Email})<br>";
-            }
-            else
-            {
-                result += "Editor not found by email.<br>";
-            }
+        // Удалить редактора
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAsync(int id)
+        {
+            var success = await _editorService.DeleteAsync(id);
+            if (!success)
+                return NotFound();
 
-            return Content(result, "text/html");
+            return NoContent();
+        }
+
+        // Получить редактора по email
+        [HttpGet("by-email/{email}")]
+        public async Task<ActionResult<EditorGetDto>> GetByEmailAsync(string email)
+        {
+            var editor = await _editorService.GetByEmailAsync(email);
+            if (editor == null)
+                return NotFound();
+
+            return Ok(editor);
         }
     }
 }

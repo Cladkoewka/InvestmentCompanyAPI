@@ -4,5 +4,5 @@ namespace Application.Interfaces;
 
 public interface IAssetService : IService<AssetGetDto, AssetCreateDto, AssetUpdateDto>
 {
-    Task<IEnumerable<AssetGetDto>> GetByNameAsync(string name);
+    Task<AssetGetDto> GetByNameAsync(string name);
 }

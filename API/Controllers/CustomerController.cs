@@ -1,90 +1,78 @@
+using Application.DTOs;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Interfaces;
-using Domain.Models;
 
 namespace API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly ICustomerService _customerService;
 
-        public CustomerController(ICustomerRepository customerRepository)
+        public CustomerController(ICustomerService customerService)
         {
-            _customerRepository = customerRepository;
+            _customerService = customerService;
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> TestCustomerRepositoryMethods()
+        // Получить всех клиентов
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CustomerGetDto>>> GetAllAsync()
         {
-            // Тестирование GetByIdAsync
-            var customerById = await _customerRepository.GetByIdAsync(1);
-            var result = customerById is not null 
-                ? $"Customer by ID: {customerById.Name}" 
-                : "Customer not found";
-            result += "<br>------------<br>";
-            
-            // Тестирование GetAllAsync
-            var allCustomers = await _customerRepository.GetAllAsync();
-            result += "<br>All customers:<br>";
-            foreach (var customer in allCustomers)
-            {
-                result += $"Customer: {customer.Name}<br>";
-            }
-            result += "<br>------------<br>";
+            var customers = await _customerService.GetAllAsync();
+            return Ok(customers);
+        }
 
-            // Тестирование AddAsync
-            var newCustomer = new Customer { Name = "New Customer" };
-            await _customerRepository.AddAsync(newCustomer);
-            result += "Added new customer<br>";
-            
-            allCustomers = await _customerRepository.GetAllAsync();
-            result += "<br>All customers:<br>";
-            foreach (var customer in allCustomers)
-            {
-                result += $"Customer: {customer.Name}<br>";
-            }
-            result += "<br>------------<br>";
+        // Получить клиента по ID
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<CustomerGetDto>> GetByIdAsync(int id)
+        {
+            var customer = await _customerService.GetByIdAsync(id);
+            if (customer == null)
+                return NotFound(); // Возвращаем 404, если клиент не найден
 
-            // Тестирование UpdateAsync
-            var customerToUpdate = new Customer { Id = 1, Name = "Updated Customer" };
-            await _customerRepository.UpdateAsync(customerToUpdate);
-            result += "Updated customer<br>";
-            
-            allCustomers = await _customerRepository.GetAllAsync();
-            result += "<br>All customers:<br>";
-            foreach (var customer in allCustomers)
-            {
-                result += $"Customer: {customer.Name}<br>";
-            }
-            result += "<br>------------<br>";
+            return Ok(customer);
+        }
 
-            // Тестирование DeleteAsync
-            await _customerRepository.DeleteAsync(customerToUpdate);
-            result += "Deleted customer<br>";
-            
-            allCustomers = await _customerRepository.GetAllAsync();
-            result += "<br>All customers:<br>";
-            foreach (var customer in allCustomers)
-            {
-                result += $"Customer: {customer.Name}<br>";
-            }
-            result += "<br>------------<br>";
+        // Добавить нового клиента
+        [HttpPost]
+        public async Task<ActionResult<CustomerGetDto>> AddAsync([FromBody] CustomerCreateDto dto)
+        {
+            var customer = await _customerService.AddAsync(dto);
+            return StatusCode(201, customer);
+        }
 
-            // Тестирование GetByNameAsync
-            var customerByName = await _customerRepository.GetByNameAsync("New Customer");
-            result += "Found customer by name:<br>";
-            if (customerByName != null)
-            {
-                result += $"Found customer by name: {customerByName.Name}<br>";
-            }
-            else
-            {
-                result += "No customer found by name.<br>";
-            }
+        // Обновить клиента
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync(int id, CustomerUpdateDto dto)
+        {
+            var isUpdated = await _customerService.UpdateAsync(id, dto);
+            if (!isUpdated)
+                return NotFound(); // Возвращаем 404, если клиент не найден
 
-            return Content(result, "text/html");
+            return NoContent(); // Возвращаем статус 204 (без контента) при успешном обновлении
+        }
+
+        // Удалить клиента
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAsync(int id)
+        {
+            var isDeleted = await _customerService.DeleteAsync(id);
+            if (!isDeleted)
+                return NotFound(); // Возвращаем 404, если клиент не найден
+
+            return NoContent(); // Возвращаем статус 204 при успешном удалении
+        }
+
+        // Получить клиента по имени
+        [HttpGet("by-name/{name}")]
+        public async Task<ActionResult<CustomerGetDto>> GetByNameAsync(string name)
+        {
+            var customer = await _customerService.GetByNameAsync(name);
+            if (customer == null)
+                return NotFound(); // Возвращаем 404, если клиент с таким именем не найден
+
+            return Ok(customer);
         }
     }
 }

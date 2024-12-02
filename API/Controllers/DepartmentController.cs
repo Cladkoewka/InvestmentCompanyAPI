@@ -1,92 +1,78 @@
+using Application.DTOs;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Interfaces;
-using Domain.Models;
 
 namespace API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class DepartmentController : ControllerBase
     {
-        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IDepartmentService _departmentService;
 
-        public DepartmentController(IDepartmentRepository departmentRepository)
+        public DepartmentController(IDepartmentService departmentService)
         {
-            _departmentRepository = departmentRepository;
+            _departmentService = departmentService;
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> TestDepartmentRepositoryMethods()
+        // Получить все отделы
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<DepartmentGetDto>>> GetAllAsync()
         {
-            var result = string.Empty;
+            var departments = await _departmentService.GetAllAsync();
+            return Ok(departments);
+        }
 
-            // Тестирование GetByIdAsync
-            var departmentById = await _departmentRepository.GetByIdAsync(1);
-            result += departmentById is not null 
-                ? $"Department by ID: {departmentById.Name}" 
-                : "Department not found";
-            result += "<br>------------<br>";
-            
-            // Тестирование GetAllAsync
-            var allDepartments = await _departmentRepository.GetAllAsync();
-            result += "<br>All departments:<br>";
-            foreach (var department in allDepartments)
-            {
-                result += $"Department: {department.Name}<br>";
-            }
-            result += "<br>------------<br>";
+        // Получить отдел по ID
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<DepartmentGetDto>> GetByIdAsync(int id)
+        {
+            var department = await _departmentService.GetByIdAsync(id);
+            if (department == null)
+                return NotFound();
 
-            // Тестирование AddAsync
-            var newDepartment = new Department { Name = "New Department" };
-            await _departmentRepository.AddAsync(newDepartment);
-            result += "Added new department<br>";
-            
-            allDepartments = await _departmentRepository.GetAllAsync();
-            result += "<br>All departments after adding:<br>";
-            foreach (var department in allDepartments)
-            {
-                result += $"Department: {department.Name}<br>";
-            }
-            result += "<br>------------<br>";
+            return Ok(department);
+        }
 
-            // Тестирование UpdateAsync
-            var departmentToUpdate = new Department { Id = 1, Name = "Updated Department" };
-            await _departmentRepository.UpdateAsync(departmentToUpdate);
-            result += "Updated department<br>";
-            
-            allDepartments = await _departmentRepository.GetAllAsync();
-            result += "<br>All departments after update:<br>";
-            foreach (var department in allDepartments)
-            {
-                result += $"Department: {department.Name}<br>";
-            }
-            result += "<br>------------<br>";
+        // Получить отдел по имени
+        [HttpGet("by-name/{name}")]
+        public async Task<ActionResult<DepartmentGetDto>> GetByNameAsync(string name)
+        {
+            var department = await _departmentService.GetByNameAsync(name);
+            if (department == null)
+                return NotFound();
 
-            // Тестирование DeleteAsync
-            await _departmentRepository.DeleteAsync(departmentToUpdate);
-            result += "Deleted department<br>";
-            
-            allDepartments = await _departmentRepository.GetAllAsync();
-            result += "<br>All departments after deletion:<br>";
-            foreach (var department in allDepartments)
-            {
-                result += $"Department: {department.Name}<br>";
-            }
-            result += "<br>------------<br>";
+            return Ok(department);
+        }
 
-            // Тестирование GetByNameAsync
-            var departmentByName = await _departmentRepository.GetByNameAsync("New Department");
-            result += "Found department by name:<br>";
-            if (departmentByName != null)
-            {
-                result += $"Found department by name: {departmentByName.Name}<br>";
-            }
-            else
-            {
-                result += "Department not found by name.<br>";
-            }
+        // Добавить новый отдел
+        [HttpPost]
+        public async Task<ActionResult<DepartmentGetDto>> AddAsync([FromBody] DepartmentCreateDto dto)
+        {
+            var department = await _departmentService.AddAsync(dto);
+            return StatusCode(201, department);
+        }
 
-            return Content(result, "text/html");
+        // Обновить отдел
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> UpdateAsync(int id, [FromBody] DepartmentUpdateDto dto)
+        {
+            var isUpdated = await _departmentService.UpdateAsync(id, dto);
+            if (!isUpdated)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        // Удалить отдел
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteAsync(int id)
+        {
+            var isDeleted = await _departmentService.DeleteAsync(id);
+            if (!isDeleted)
+                return NotFound();
+
+            return NoContent();
         }
     }
 }

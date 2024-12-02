@@ -33,3 +33,11 @@ C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данн
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\obj\Debug\net8.0\API.pdb
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\obj\Debug\net8.0\API.genruntimeconfig.cache
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\obj\Debug\net8.0\ref\API.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\AutoMapper.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\Application.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\bin\Debug\net8.0\Application.pdb
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\API\obj\Debug\net8.0\API.MvcApplicationPartsAssemblyInfo.cs

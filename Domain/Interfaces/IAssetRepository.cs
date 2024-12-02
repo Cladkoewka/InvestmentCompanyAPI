@@ -4,5 +4,5 @@ namespace Domain.Interfaces;
 
 public interface IAssetRepository : IRepository<Asset>
 {
-    Task<IEnumerable<Asset>> GetByNameAsync(string name);
+    Task<Asset> GetByNameAsync(string name);
 }

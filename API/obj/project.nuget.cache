@@ -1,17 +1,21 @@
 {
   "version": 2,
-  "dgSpecHash": "wXY0YxhILEBcn970NIysWnzrT9YHuTp6LfIYMXle8wjpRZDbDShveZSYZVPqOp8YfNI9M2uxCZdq/bcJQJewcA==",
+  "dgSpecHash": "gk/PETkw5n0oLJnMwd19SA1I2a4jEUjVYPlind2Xpc9XROHvmXbDm0rDQVMJNSQy4ILp4olipTjRPOtIDJrmFA==",
   "success": true,
   "projectFilePath": "C:\\Users\\semen\\Desktop\\_\\Папки Осень 2024\\Учеба\\Базы данных 5 сем\\TR\\Investment company\\API\\API.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\semen\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
-    "C:\\Users\\semen\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
-    "C:\\Users\\semen\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\semen\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.2\\microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
     "C:\\Users\\semen\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.2\\microsoft.extensions.logging.abstractions.8.0.2.nupkg.sha512",
     "C:\\Users\\semen\\.nuget\\packages\\microsoft.extensions.options\\6.0.0\\microsoft.extensions.options.6.0.0.nupkg.sha512",
     "C:\\Users\\semen\\.nuget\\packages\\microsoft.extensions.primitives\\6.0.0\\microsoft.extensions.primitives.6.0.0.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\microsoft.openapi\\1.6.22\\microsoft.openapi.1.6.22.nupkg.sha512",
     "C:\\Users\\semen\\.nuget\\packages\\npgsql\\9.0.1\\npgsql.9.0.1.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\swashbuckle.aspnetcore\\7.1.0\\swashbuckle.aspnetcore.7.1.0.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\7.1.0\\swashbuckle.aspnetcore.swagger.7.1.0.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\7.1.0\\swashbuckle.aspnetcore.swaggergen.7.1.0.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\7.1.0\\swashbuckle.aspnetcore.swaggerui.7.1.0.nupkg.sha512",
     "C:\\Users\\semen\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
   ],
   "logs": []

@@ -75,10 +75,10 @@ namespace Application.Services
         }
 
         // Получить активы по имени
-        public async Task<IEnumerable<AssetGetDto>> GetByNameAsync(string name)
+        public async Task<AssetGetDto> GetByNameAsync(string name)
         {
-            var assets = await _assetRepository.GetByNameAsync(name);
-            return assets.Select(asset => _mapper.Map<AssetGetDto>(asset));
+            var asset = await _assetRepository.GetByNameAsync(name);
+            return _mapper.Map<AssetGetDto>(asset);
         }
     }
 }

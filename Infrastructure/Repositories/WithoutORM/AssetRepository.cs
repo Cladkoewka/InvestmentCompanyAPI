@@ -97,26 +97,25 @@ public class AssetRepository : BaseRepository, IAssetRepository
         await command.ExecuteNonQueryAsync();
     }
 
-    public async Task<IEnumerable<Asset>> GetByNameAsync(string name)
+    public async Task<Asset> GetByNameAsync(string name)
     {
         const string query = "SELECT id, name FROM assets WHERE name = @name";
 
-        var assets = new List<Asset>();
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("name", name);
 
         await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+        if (await reader.ReadAsync())
         {
-            assets.Add(new Asset
+            return new Asset
             {
                 Id = reader.GetInt32(0),
                 Name = reader.GetString(1)
-            });
+            };
         }
 
-        return assets;
+        return null;
     }
 }

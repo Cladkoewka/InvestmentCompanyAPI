@@ -14,46 +14,64 @@ namespace API.Controllers.LinkControllers
             _projectDepartmentLinkRepository = projectDepartmentLinkRepository;
         }
 
-        // Метод для тестирования методов репозитория
-        [HttpGet("test")]
-        public async Task<IActionResult> TestProjectDepartmentLinkRepositoryMethods()
+        // Добавить связь между проектом и департаментом
+        [HttpPost]
+        public async Task<IActionResult> AddLinkAsync(int projectId, int departmentId)
         {
-            var result = "<h2>Testing Project-Department Link Repository</h2>";
-
-            // Тестирование AddLinkAsync
-            var projectId = 1;
-            var departmentId = 2;
-            await _projectDepartmentLinkRepository.RemoveLinkAsync(projectId, departmentId);
-            await _projectDepartmentLinkRepository.AddLinkAsync(projectId, departmentId);
-            result += $"Added link between project {projectId} and department {departmentId}<br>";
-            result += "<br>------------<br>";
-
-            // Тестирование GetDepartmentIdsByProjectIdAsync
-            var departmentIds = await _projectDepartmentLinkRepository.GetDepartmentIdsByProjectIdAsync(projectId);
-            result += $"Departments linked to project {projectId}:<br>";
-            foreach (var id in departmentIds)
+            try
             {
-                result += $"Department ID: {id}<br>";
+                await _projectDepartmentLinkRepository.AddLinkAsync(projectId, departmentId);
+                return Ok(new { Message = $"Successfully linked project {projectId} and department {departmentId}" });
             }
-
-            result += "<br>------------<br>";
-
-            // Тестирование GetProjectIdsByDepartmentIdAsync
-            var projectIds = await _projectDepartmentLinkRepository.GetProjectIdsByDepartmentIdAsync(departmentId);
-            result += $"Projects linked to department {departmentId}:<br>";
-            foreach (var id in projectIds)
+            catch (Exception ex)
             {
-                result += $"Project ID: {id}<br>";
+                return BadRequest(new { Message = "Failed to add link", Error = ex.Message });
             }
+        }
 
-            result += "<br>------------<br>";
+        // Удалить связь между проектом и департаментом
+        [HttpDelete]
+        public async Task<IActionResult> RemoveLinkAsync(int projectId, int departmentId)
+        {
+            try
+            {
+                await _projectDepartmentLinkRepository.RemoveLinkAsync(projectId, departmentId);
+                return Ok(new { Message = $"Successfully removed link between project {projectId} and department {departmentId}" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to remove link", Error = ex.Message });
+            }
+        }
 
-            // Тестирование RemoveLinkAsync
-            await _projectDepartmentLinkRepository.RemoveLinkAsync(projectId, departmentId);
-            result += $"Removed link between project {projectId} and department {departmentId}<br>";
-            result += "<br>------------<br>";
+        // Получить список департаментов по ID проекта
+        [HttpGet("project/{projectId}")]
+        public async Task<IActionResult> GetDepartmentsByProjectIdAsync(int projectId)
+        {
+            try
+            {
+                var departmentIds = await _projectDepartmentLinkRepository.GetDepartmentIdsByProjectIdAsync(projectId);
+                return Ok(new { ProjectId = projectId, DepartmentIds = departmentIds });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to retrieve departments", Error = ex.Message });
+            }
+        }
 
-            return Content(result, "text/html");
+        // Получить список проектов по ID департамента
+        [HttpGet("department/{departmentId}")]
+        public async Task<IActionResult> GetProjectsByDepartmentIdAsync(int departmentId)
+        {
+            try
+            {
+                var projectIds = await _projectDepartmentLinkRepository.GetProjectIdsByDepartmentIdAsync(departmentId);
+                return Ok(new { DepartmentId = departmentId, ProjectIds = projectIds });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to retrieve projects", Error = ex.Message });
+            }
         }
     }
 }

@@ -1,89 +1,75 @@
+using Application.DTOs;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Interfaces;
-using Domain.Models;
 
 namespace API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IEmployeeService _employeeService;
 
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        public EmployeeController(IEmployeeService employeeService)
         {
-            _employeeRepository = employeeRepository;
+            _employeeService = employeeService;
+        }
+        
+        // Получить всех сотрудников
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var employees = await _employeeService.GetAllAsync();
+            return Ok(employees);
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> TestEmployeeRepositoryMethods()
+        // Получить сотрудника по ID
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var result = string.Empty;
+            var employee = await _employeeService.GetByIdAsync(id);
+            if (employee == null)
+                return NotFound();
 
-            // Тестирование GetByIdAsync
-            var employeeById = await _employeeRepository.GetByIdAsync(1);
-            result += employeeById is not null 
-                ? $"Employee by ID: {employeeById.FirstName} {employeeById.LastName}" 
-                : "Employee not found";
-            result += "<br>------------<br>";
-            
-            // Тестирование GetAllAsync
-            var allEmployees = await _employeeRepository.GetAllAsync();
-            result += "<br>All employees:<br>";
-            foreach (var employee in allEmployees)
-            {
-                result += $"Employee: {employee.FirstName} {employee.LastName}<br>";
-            }
-            result += "<br>------------<br>";
+            return Ok(employee);
+        }
 
-            // Тестирование AddAsync
-            var newEmployee = new Employee { FirstName = "Alice", LastName = "Smith", DepartmentId = 3 };
-            await _employeeRepository.AddAsync(newEmployee);
-            result += "Added new employee<br>";
-            
-            allEmployees = await _employeeRepository.GetAllAsync();
-            result += "<br>All employees after adding:<br>";
-            foreach (var employee in allEmployees)
-            {
-                result += $"Employee: {employee.FirstName} {employee.LastName}<br>";
-            }
-            result += "<br>------------<br>";
+        // Добавить нового сотрудника
+        [HttpPost]
+        public async Task<IActionResult> AddAsync([FromBody] EmployeeCreateDto dto)
+        {
+            var employee = await _employeeService.AddAsync(dto);
+            return StatusCode(201, employee);
+        }
 
-            // Тестирование UpdateAsync
-            var employeeToUpdate = new Employee { Id = 2, FirstName = "Alice", LastName = "Johnson", DepartmentId = 4 };
-            await _employeeRepository.UpdateAsync(employeeToUpdate);
-            result += "Updated employee<br>";
-            
-            allEmployees = await _employeeRepository.GetAllAsync();
-            result += "<br>All employees after update:<br>";
-            foreach (var employee in allEmployees)
-            {
-                result += $"Employee: {employee.FirstName} {employee.LastName}<br>";
-            }
-            result += "<br>------------<br>";
+        // Обновить сотрудника
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] EmployeeUpdateDto dto)
+        {
+            var result = await _employeeService.UpdateAsync(id, dto);
+            if (!result)
+                return NotFound();
 
-            // Тестирование DeleteAsync
-            await _employeeRepository.DeleteAsync(employeeToUpdate);
-            result += "Deleted employee<br>";
-            
-            allEmployees = await _employeeRepository.GetAllAsync();
-            result += "<br>All employees after deletion:<br>";
-            foreach (var employee in allEmployees)
-            {
-                result += $"Employee: {employee.FirstName} {employee.LastName}<br>";
-            }
-            result += "<br>------------<br>";
+            return NoContent();
+        }
 
-            // Тестирование GetByDepartmentIdAsync
-            var employeesByDepartment = await _employeeRepository.GetByDepartmentIdAsync(1);
-            result += "Employees in department 1:<br>";
-            foreach (var employee in employeesByDepartment)
-            {
-                result += $"Employee: {employee.FirstName} {employee.LastName}<br>";
-            }
-            result += "<br>------------<br>";
+        // Удалить сотрудника
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var result = await _employeeService.DeleteAsync(id);
+            if (!result)
+                return NotFound();
 
-            return Content(result, "text/html");
+            return NoContent();
+        }
+
+        // Получить сотрудников по departmentId
+        [HttpGet("by-department/{departmentId}")]
+        public async Task<IActionResult> GetByDepartmentIdAsync(int departmentId)
+        {
+            var employees = await _employeeService.GetByDepartmentIdAsync(departmentId);
+            return Ok(employees);
         }
     }
 }

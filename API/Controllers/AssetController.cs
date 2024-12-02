@@ -1,90 +1,77 @@
+using Application.DTOs;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Interfaces;
-using Domain.Models;
 
 namespace API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class AssetController : ControllerBase
     {
-        private readonly IAssetRepository _assetRepository;
+        private readonly IAssetService _assetService;
 
-        public AssetController(IAssetRepository assetRepository)
+        public AssetController(IAssetService assetService)
         {
-            _assetRepository = assetRepository;
+            _assetService = assetService;
+        }
+        
+        // Получить все активы
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<AssetGetDto>>> GetAllAsync()
+        {
+            var assets = await _assetService.GetAllAsync();
+            return Ok(assets); // Возвращаем список активов
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> TestAssetRepositoryMethods()
+        // Получить актив по ID
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<AssetGetDto>> GetByIdAsync(int id)
         {
-            // Тестирование GetByIdAsync
-            var assetById = await _assetRepository.GetByIdAsync(1);
-            var result = assetById is not null 
-                ? $"Asset by ID: {assetById.Name}" 
-                : "Asset not found";
-            result += "<br>------------<br>";
-            
-            // Тестирование GetAllAsync
-            var allAssets = await _assetRepository.GetAllAsync();
-            result += "<br>All assets:<br>";
-            foreach (var asset in allAssets)
-            {
-                result += $"Asset: {asset.Name}<br>";
-            }
-            result += "<br>------------<br>";
+            var asset = await _assetService.GetByIdAsync(id);
+            if (asset == null)
+                return NotFound(); // Возвращаем 404, если актив не найден
 
+            return Ok(asset); // Возвращаем найденный актив
+        }
 
-            // Тестирование AddAsync
-            var newAsset = new Asset { Name = "New Asset" };
-            await _assetRepository.AddAsync(newAsset);
-            result += "Added new asset<br>";
-            
-            
-            allAssets = await _assetRepository.GetAllAsync();
-            result += "<br>All assets:<br>";
-            foreach (var asset in allAssets)
-            {
-                result += $"Asset: {asset.Name}<br>";
-            }
-            result += "<br>------------<br>";
+        
 
-            // Тестирование UpdateAsync
-            var assetToUpdate = new Asset { Id = 1, Name = "Updated Asset" };
-            await _assetRepository.UpdateAsync(assetToUpdate);
-            result += "Updated asset<br>";
-            
-            allAssets = await _assetRepository.GetAllAsync();
-            result += "<br>All assets:<br>";
-            foreach (var asset in allAssets)
-            {
-                result += $"Asset: {asset.Name}<br>";
-            }
-            result += "<br>------------<br>";
+        // Добавить новый актив
+        [HttpPost]
+        public async Task<ActionResult<AssetGetDto>> AddAsync([FromBody] AssetCreateDto dto)
+        {
+            var asset = await _assetService.AddAsync(dto);
+            return StatusCode(201, asset);
+        }
 
-            
-            await _assetRepository.DeleteAsync(assetToUpdate);
-            result += "Deleted asset<br>";
-            
-            allAssets = await _assetRepository.GetAllAsync();
-            result += "<br>All assets:<br>";
-            foreach (var asset in allAssets)
-            {
-                result += $"Asset: {asset.Name}<br>";
-            }
-            result += "<br>------------<br>";
+        // Обновить актив
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync(int id, AssetUpdateDto dto)
+        {
+            var isUpdated = await _assetService.UpdateAsync(id, dto);
+            if (!isUpdated)
+                return NotFound(); // Возвращаем 404, если актив не найден
 
-            // Тестирование GetByNameAsync
-            var assetsByName = await _assetRepository.GetByNameAsync("New Asset");
-            result += "Found asset by name:<br>";
-            foreach (var asset in assetsByName)
-            {
-                result += $"Found asset by name: {asset.Name}<br>";
-            }
+            return NoContent(); // Возвращаем статус 204 (без контента) при успешном обновлении
+        }
 
+        // Удалить актив
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAsync(int id)
+        {
+            var isDeleted = await _assetService.DeleteAsync(id);
+            if (!isDeleted)
+                return NotFound(); // Возвращаем 404, если актив не найден
 
-            
-            return Content(result, "text/html");
+            return NoContent(); // Возвращаем статус 204 при успешном удалении
+        }
+
+        // Получить активы по имени
+        [HttpGet("by-name/{name}")]
+        public async Task<ActionResult<IEnumerable<AssetGetDto>>> GetByNameAsync(string name)
+        {
+            var assets = await _assetService.GetByNameAsync(name);
+            return Ok(assets); 
         }
     }
 }

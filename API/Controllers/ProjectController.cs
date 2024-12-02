@@ -1,118 +1,84 @@
+using Application.DTOs;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Interfaces;
-using Domain.Models;
 
 namespace API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class ProjectController : ControllerBase
     {
-        private readonly IProjectRepository _projectRepository;
+        private readonly IProjectService _projectService;
 
-        public ProjectController(IProjectRepository projectRepository)
+        public ProjectController(IProjectService projectService)
         {
-            _projectRepository = projectRepository;
+            _projectService = projectService;
+        }
+        
+        // Получить все проекты
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ProjectGetDto>>> GetAllAsync()
+        {
+            var projects = await _projectService.GetAllAsync();
+            return Ok(projects);
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> TestProjectRepositoryMethods()
+        // Получить проект по ID
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProjectGetDto>> GetByIdAsync(int id)
         {
-            Console.WriteLine(DateTime.Now);
-            var result = string.Empty;
+            var project = await _projectService.GetByIdAsync(id);
+            if (project == null)
+                return NotFound();
 
-            // Тестирование GetByIdAsync
-            var projectById = await _projectRepository.GetByIdAsync(1);
-            result += projectById is not null 
-                ? $"Project by ID: {projectById.Name}" 
-                : "Project not found";
-            result += "<br>------------<br>";
-            
-            // Тестирование GetAllAsync
-            var allProjects = await _projectRepository.GetAllAsync();
-            result += "<br>All projects:<br>";
-            foreach (var project in allProjects)
-            {
-                result += $"Project: {project.Name} (Status: {project.Status})<br>";
-            }
-            result += "<br>------------<br>";
+            return Ok(project);
+        }
+        
 
-            // Тестирование AddAsync
-            var newProject = new Project 
-            { 
-                Name = "New Project", 
-                Status = "In Progress", 
-                Profit = 100000m, 
-                Cost = 50000m, 
-                Deadline = DateTime.Now.AddMonths(6), 
-                CustomerId = 3, 
-                EditorId = 4 
-            };
-            await _projectRepository.AddAsync(newProject);
-            result += "Added new project<br>";
-            
-            allProjects = await _projectRepository.GetAllAsync();
-            result += "<br>All projects after adding:<br>";
-            foreach (var project in allProjects)
-            {
-                result += $"Project: {project.Name} (Status: {project.Status})<br>";
-            }
-            result += "<br>------------<br>";
+        // Добавить новый проект
+        [HttpPost]
+        public async Task<ActionResult<ProjectGetDto>> AddAsync(ProjectCreateDto dto)
+        {
+            var project = await _projectService.AddAsync(dto);
+            return StatusCode(201, project);
+        }
 
-            // Тестирование UpdateAsync
-            var projectToUpdate = new Project 
-            { 
-                Id = 1, 
-                Name = "Updated Project", 
-                Status = "Completed", 
-                Profit = 150000m, 
-                Cost = 60000m, 
-                Deadline = DateTime.Now.AddMonths(3), 
-                CustomerId = 4, 
-                EditorId = 3 
-            };
-            await _projectRepository.UpdateAsync(projectToUpdate);
-            result += "Updated project<br>";
-            
-            allProjects = await _projectRepository.GetAllAsync();
-            result += "<br>All projects after update:<br>";
-            foreach (var project in allProjects)
-            {
-                result += $"Project: {project.Name} (Status: {project.Status})<br>";
-            }
-            result += "<br>------------<br>";
+        // Обновить проект
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync(int id, ProjectUpdateDto dto)
+        {
+            var success = await _projectService.UpdateAsync(id, dto);
+            if (!success)
+                return NotFound();
 
-            // Тестирование DeleteAsync
-            await _projectRepository.DeleteAsync(projectToUpdate);
-            result += "Deleted project<br>";
-            
-            allProjects = await _projectRepository.GetAllAsync();
-            result += "<br>All projects after deletion:<br>";
-            foreach (var project in allProjects)
-            {
-                result += $"Project: {project.Name} (Status: {project.Status})<br>";
-            }
-            result += "<br>------------<br>";
+            return NoContent();
+        }
 
-            // Тестирование GetByCustomerIdAsync
-            var projectsByCustomer = await _projectRepository.GetByCustomerIdAsync(1);
-            result += "Projects by customer ID:<br>";
-            foreach (var project in projectsByCustomer)
-            {
-                result += $"Project: {project.Name} (Status: {project.Status})<br>";
-            }
-            result += "<br>------------<br>";
+        // Удалить проект
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAsync(int id)
+        {
+            var success = await _projectService.DeleteAsync(id);
+            if (!success)
+                return NotFound();
 
-            // Тестирование GetByEditorIdAsync
-            var projectsByEditor = await _projectRepository.GetByEditorIdAsync(2);
-            result += "Projects by editor ID:<br>";
-            foreach (var project in projectsByEditor)
-            {
-                result += $"Project: {project.Name} (Status: {project.Status})<br>";
-            }
-            result += "<br>------------<br>";
+            return NoContent();
+        }
 
-            return Content(result, "text/html");
+        // Получить проекты по CustomerId
+        [HttpGet("customer/{customerId}")]
+        public async Task<ActionResult<IEnumerable<ProjectGetDto>>> GetByCustomerIdAsync(int customerId)
+        {
+            var projects = await _projectService.GetByCustomerIdAsync(customerId);
+            return Ok(projects);
+        }
+
+        // Получить проекты по EditorId
+        [HttpGet("editor/{editorId}")]
+        public async Task<ActionResult<IEnumerable<ProjectGetDto>>> GetByEditorIdAsync(int editorId)
+        {
+            var projects = await _projectService.GetByEditorIdAsync(editorId);
+            return Ok(projects);
         }
     }
 }

@@ -1,7 +1,11 @@
+using Application.Interfaces;
+using Application.Mapping;
+using Application.Services;
 using Domain.Interfaces;
 using Domain.Interfaces.LinkRepositories;
 using Infrastructure.Repositories.WithoutORM;
 using Infrastructure.Repositories.WithoutORM.LinkRepositories;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -21,13 +25,44 @@ services.AddSingleton<IEmployeeRepository>(new EmployeeRepository(connectionStri
 services.AddSingleton<IProjectRepository>(new ProjectRepository(connectionString));
 services.AddSingleton<IRiskRepository>(new RiskRepository(connectionString));
 
-// AutoMapper
-services.AddAutoMapper(typeof(Program));
+// Services
+services.AddScoped<IAssetService, AssetService>();
+services.AddScoped<ICustomerService, CustomerService>();
+services.AddScoped<IDepartmentService, DepartmentService>();
+services.AddScoped<IEditorService, EditorService>();
+services.AddScoped<IEmployeeService, EmployeeService>();
+services.AddScoped<IRiskService, RiskService>();
+services.AddScoped<IProjectService, ProjectService>();
 
+// AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// Swagger
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Project Management API"
+    });
+});
 
 services.AddControllers();
 
+
 var app = builder.Build();
+
+// Enable Swagger in development
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Management API v1");
+        options.RoutePrefix = string.Empty; 
+    });
+}
 
 app.MapControllers();
 
@@ -36,7 +71,7 @@ app.Run();
 /// TO-DO
 /// - Сделать слой приложения (дто, сервисы, валидация, маппинг)
 /// - Сделать нормальные контроллеры
-/// - Добавить сваггер, протестить все еще раз
+/// - Добавить сваггер, протестить все еще раз 
 /// - Дописать program.cs, сделать методы расширения, чтобы избавиться от хлама
 /// - Продумать разделение ролей на пользователя и админа
 /// - Сделать представления для визуализации данных для разных ролей
