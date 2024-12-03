@@ -58,19 +58,20 @@ public class EmployeeRepository : BaseRepository, IEmployeeRepository
 
     public async Task AddAsync(Employee entity)
     {
-        const string procedure = "InsertEmployee"; 
+        const string function = "InsertEmployee"; // Имя функции
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(procedure, connection)
-        {
-            CommandType = CommandType.StoredProcedure
-        };
+        var query = $"SELECT {function}(@p_firstname, @p_lastname, @p_departmentid)";
+
+        await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("p_firstname", entity.FirstName);
         command.Parameters.AddWithValue("p_lastname", entity.LastName);
         command.Parameters.AddWithValue("p_departmentid", entity.DepartmentId);
 
-        await command.ExecuteNonQueryAsync();
+        var result = await command.ExecuteScalarAsync();
+        entity.Id = Convert.ToInt32(result);
     }
+
 
     public async Task UpdateAsync(Employee entity)
     {

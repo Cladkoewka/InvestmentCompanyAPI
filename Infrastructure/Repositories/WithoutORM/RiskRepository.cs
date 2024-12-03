@@ -56,18 +56,19 @@ public class RiskRepository : BaseRepository, IRiskRepository
 
     public async Task AddAsync(Risk entity)
     {
-        const string procedure = "InsertRisk"; 
+        const string function = "InsertRisk"; // Имя функции
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(procedure, connection)
-        {
-            CommandType = CommandType.StoredProcedure
-        };
+        var query = $"SELECT {function}(@p_type, @p_grade)";
+
+        await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("p_type", entity.Type);
         command.Parameters.AddWithValue("p_grade", entity.Grade);
 
-        await command.ExecuteNonQueryAsync();
+        var result = await command.ExecuteScalarAsync();
+        entity.Id = Convert.ToInt32(result);
     }
+
 
     public async Task UpdateAsync(Risk entity)
     {

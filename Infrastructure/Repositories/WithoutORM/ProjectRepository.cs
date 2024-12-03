@@ -66,13 +66,12 @@ public class ProjectRepository : BaseRepository, IProjectRepository
 
     public async Task AddAsync(Project entity)
     {
-        const string procedure = "InsertProject"; 
+        const string function = "InsertProject"; // Имя функции
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(procedure, connection)
-        {
-            CommandType = CommandType.StoredProcedure
-        };
+        var query = $"SELECT {function}(@p_name, @p_status, @p_profit, @p_cost, @p_deadline, @p_customerid, @p_editorid)";
+
+        await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("p_name", entity.Name);
         command.Parameters.AddWithValue("p_status", entity.Status);
         command.Parameters.AddWithValue("p_profit", entity.Profit);
@@ -81,8 +80,10 @@ public class ProjectRepository : BaseRepository, IProjectRepository
         command.Parameters.AddWithValue("p_customerid", entity.CustomerId);
         command.Parameters.AddWithValue("p_editorid", entity.EditorId);
 
-        await command.ExecuteNonQueryAsync();
+        var result = await command.ExecuteScalarAsync();
+        entity.Id = Convert.ToInt32(result);
     }
+
 
     public async Task UpdateAsync(Project entity)
     {

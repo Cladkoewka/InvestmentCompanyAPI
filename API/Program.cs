@@ -1,20 +1,10 @@
 using API.Extensions;
-using Application.Interfaces;
-using Application.Mapping;
-using Application.Services;
-using Application.Validation;
-using Domain.Interfaces;
-using Domain.Interfaces.LinkRepositories;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Infrastructure.Repositories.WithoutORM;
-using Infrastructure.Repositories.WithoutORM.LinkRepositories;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
+var configuration = builder.Configuration;
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = configuration.GetConnectionString("DefaultConnection");
 
 // Repositories
 services.AddRepositories(connectionString);
@@ -44,7 +34,7 @@ app.MapControllers();
 app.Run();
 
 /// TO-DO
-/// - Продумать разделение ролей на пользователя и админа
+/// - Продумать разделение ролей на пользователя и админа (Роли сотрудника и пользователя, просто смотрящего инвест проекты)
 /// - Сделать представления для визуализации данных для разных ролей
 /// - Создать CLR функцию
 /// - Создать хотя бы 1 триггер на таблицу

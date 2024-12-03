@@ -61,19 +61,20 @@ public class EditorRepository : BaseRepository, IEditorRepository
 
     public async Task AddAsync(Editor entity)
     {
-        const string procedure = "InsertEditor"; 
+        const string function = "InsertEditor"; // Имя функции
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(procedure, connection)
-        {
-            CommandType = CommandType.StoredProcedure
-        };
+        var query = $"SELECT {function}(@p_fullname, @p_email, @p_phonenumber)";
+
+        await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("p_fullname", entity.FullName);
         command.Parameters.AddWithValue("p_email", entity.Email);
         command.Parameters.AddWithValue("p_phonenumber", entity.PhoneNumber);
 
-        await command.ExecuteNonQueryAsync();
+        var result = await command.ExecuteScalarAsync();
+        entity.Id = Convert.ToInt32(result);
     }
+
 
     public async Task UpdateAsync(Editor entity)
     {

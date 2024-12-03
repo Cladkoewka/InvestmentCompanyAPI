@@ -57,17 +57,18 @@ public class CustomerRepository : BaseRepository, ICustomerRepository
 
     public async Task AddAsync(Customer entity)
     {
-        const string procedure = "InsertCustomer"; // Хранимая процедура для обновления
+        const string function = "InsertCustomer"; // Имя функции
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(procedure, connection)
-        {
-            CommandType = CommandType.StoredProcedure
-        };
+        var query = $"SELECT {function}(@p_name)";
+
+        await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("p_name", entity.Name);
 
-        await command.ExecuteNonQueryAsync();
+        var result = await command.ExecuteScalarAsync();
+        entity.Id = Convert.ToInt32(result);
     }
+
 
     public async Task UpdateAsync(Customer entity)
     {

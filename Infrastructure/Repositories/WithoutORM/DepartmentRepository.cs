@@ -54,17 +54,18 @@ public class DepartmentRepository : BaseRepository, IDepartmentRepository
 
     public async Task AddAsync(Department entity)
     {
-        const string procedure = "InsertDepartment"; // Хранимая процедура для обновления
+        const string function = "InsertDepartment"; // Имя функции
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(procedure, connection)
-        {
-            CommandType = CommandType.StoredProcedure
-        };
+        var query = $"SELECT {function}(@p_name)";
+
+        await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("p_name", entity.Name);
 
-        await command.ExecuteNonQueryAsync();
+        var result = await command.ExecuteScalarAsync();
+        entity.Id = Convert.ToInt32(result);
     }
+
 
     public async Task UpdateAsync(Department entity)
     {

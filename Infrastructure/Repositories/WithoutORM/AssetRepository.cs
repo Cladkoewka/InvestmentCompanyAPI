@@ -56,14 +56,17 @@ public class AssetRepository : BaseRepository, IAssetRepository
 
     public async Task AddAsync(Asset entity)
     {
-        const string procedure = "InsertAsset"; // Имя процедуры
+        const string function = "InsertAsset"; // Имя процедуры
 
         await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(procedure, connection)
-        {
-            CommandType = CommandType.StoredProcedure
-        };
+        
+        var query = $"SELECT {function}(@p_name)";
+
+        await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("p_name", entity.Name);
+
+        var result = await command.ExecuteScalarAsync();
+        entity.Id = Convert.ToInt32(result);;
 
         await command.ExecuteNonQueryAsync();
     }
