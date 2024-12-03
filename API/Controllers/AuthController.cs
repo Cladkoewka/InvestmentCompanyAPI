@@ -16,13 +16,11 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    // Регистрация пользователя
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         try
         {
-            // Вызов метода регистрации в сервисе
             var token = await _authService.RegisterAsync(dto);
             return Ok(new { token });
         }
@@ -32,13 +30,11 @@ public class AuthController : ControllerBase
         }
     }
 
-    // Логин пользователя
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         try
         {
-            // Вызов метода аутентификации в сервисе
             var token = await _authService.LoginAsync(dto);
             return Ok(new { token });
         }

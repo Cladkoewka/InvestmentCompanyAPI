@@ -16,7 +16,6 @@ namespace API.Controllers
             _employeeService = employeeService;
         }
         
-        // Получить всех сотрудников
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
@@ -25,7 +24,6 @@ namespace API.Controllers
             return Ok(employees);
         }
 
-        // Получить сотрудника по ID
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
@@ -37,31 +35,31 @@ namespace API.Controllers
             return Ok(employee);
         }
 
-        // Добавить нового сотрудника
+        [Authorize(Roles = "Admin,Viewer")]
+        [HttpGet("by-department/{departmentId}")]
+        public async Task<IActionResult> GetByDepartmentIdAsync(int departmentId)
+        {
+            var employees = await _employeeService.GetByDepartmentIdAsync(departmentId);
+            return Ok(employees);
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] EmployeeCreateDto dto)
         {
-            // Проверка валидации
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
             
             var employee = await _employeeService.AddAsync(dto);
             return StatusCode(201, employee);
         }
 
-        // Обновить сотрудника
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] EmployeeUpdateDto dto)
         {
-            // Проверка валидации
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
             
             var result = await _employeeService.UpdateAsync(id, dto);
             if (!result)
@@ -70,7 +68,6 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // Удалить сотрудника
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
@@ -80,15 +77,6 @@ namespace API.Controllers
                 return NotFound();
 
             return NoContent();
-        }
-
-        // Получить сотрудников по departmentId
-        [Authorize(Roles = "Admin,Viewer")]
-        [HttpGet("by-department/{departmentId}")]
-        public async Task<IActionResult> GetByDepartmentIdAsync(int departmentId)
-        {
-            var employees = await _employeeService.GetByDepartmentIdAsync(departmentId);
-            return Ok(employees);
         }
     }
 }

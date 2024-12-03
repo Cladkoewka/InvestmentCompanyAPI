@@ -1,6 +1,6 @@
 namespace Domain.Models;
 
-// Инвестиционный проект
+// Invest Project
 public class Project
 {
     public int Id { get; set; }

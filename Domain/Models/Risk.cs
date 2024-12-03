@@ -1,6 +1,6 @@
 namespace Domain.Models;
 
-// Риски (банкротство, валютный риск и т.д.)
+// Risk (default, valute etc)
 public class Risk
 {
     public int Id { get; set; }

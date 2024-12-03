@@ -17,6 +17,12 @@ namespace Application.Services
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<CustomerGetDto>> GetAllAsync()
+        {
+            var customers = await _customerRepository.GetAllAsync();
+            return customers.Select(c => _mapper.Map<CustomerGetDto>(c));
+        }
+
         public async Task<CustomerGetDto?> GetByIdAsync(int id)
         {
             var customer = await _customerRepository.GetByIdAsync(id);
@@ -26,10 +32,10 @@ namespace Application.Services
             return _mapper.Map<CustomerGetDto>(customer);
         }
 
-        public async Task<IEnumerable<CustomerGetDto>> GetAllAsync()
+        public async Task<CustomerGetDto?> GetByNameAsync(string name)
         {
-            var customers = await _customerRepository.GetAllAsync();
-            return customers.Select(c => _mapper.Map<CustomerGetDto>(c));
+            var customer = await _customerRepository.GetByNameAsync(name);
+            return _mapper.Map<CustomerGetDto>(customer);
         }
 
         public async Task<CustomerGetDto> AddAsync(CustomerCreateDto dto)
@@ -65,12 +71,6 @@ namespace Application.Services
 
             await _customerRepository.DeleteAsync(existingCustomer);
             return true;
-        }
-
-        public async Task<CustomerGetDto?> GetByNameAsync(string name)
-        {
-            var customer = await _customerRepository.GetByNameAsync(name);
-            return _mapper.Map<CustomerGetDto>(customer);
         }
     }
 }

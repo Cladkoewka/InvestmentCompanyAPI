@@ -15,7 +15,6 @@ namespace API.Controllers.LinkControllers
             _projectAssetLinkRepository = projectAssetLinkRepository;
         }
 
-        // Добавить связь между проектом и активом
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddLinkAsync(int projectId, int assetId)
@@ -31,7 +30,6 @@ namespace API.Controllers.LinkControllers
             }
         }
 
-        // Удалить связь между проектом и активом
         [HttpDelete]
         public async Task<IActionResult> RemoveLinkAsync(int projectId, int assetId)
         {
@@ -46,7 +44,6 @@ namespace API.Controllers.LinkControllers
             }
         }
 
-        // Получить список активов по ID проекта
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("project/{projectId}")]
         public async Task<IActionResult> GetAssetsByProjectIdAsync(int projectId)
@@ -62,7 +59,6 @@ namespace API.Controllers.LinkControllers
             }
         }
 
-        // Получить список проектов по ID актива
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("asset/{assetId}")]
         public async Task<IActionResult> GetProjectsByAssetIdAsync(int assetId)

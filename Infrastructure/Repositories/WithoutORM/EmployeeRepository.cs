@@ -9,29 +9,6 @@ public class EmployeeRepository : BaseRepository, IEmployeeRepository
 {
     public EmployeeRepository(string connectionString) : base(connectionString) { }
 
-    public async Task<Employee?> GetByIdAsync(int id)
-    {
-        const string query = "SELECT id, firstname, lastname, departmentid FROM employees WHERE id = @id";
-
-        await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", id);
-
-        await using var reader = await command.ExecuteReaderAsync();
-        if (await reader.ReadAsync())
-        {
-            return new Employee
-            {
-                Id = reader.GetInt32(0),
-                FirstName = reader.GetString(1),
-                LastName = reader.GetString(2),
-                DepartmentId = reader.GetInt32(3)
-            };
-        }
-
-        return null;
-    }
-
     public async Task<IEnumerable<Employee>> GetAllAsync()
     {
         const string query = "SELECT id, firstname, lastname, departmentid FROM employees";
@@ -55,10 +32,58 @@ public class EmployeeRepository : BaseRepository, IEmployeeRepository
 
         return employees;
     }
+    
+    public async Task<Employee?> GetByIdAsync(int id)
+    {
+        const string query = "SELECT id, firstname, lastname, departmentid FROM employees WHERE id = @id";
+
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("@id", id);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            return new Employee
+            {
+                Id = reader.GetInt32(0),
+                FirstName = reader.GetString(1),
+                LastName = reader.GetString(2),
+                DepartmentId = reader.GetInt32(3)
+            };
+        }
+
+        return null;
+    }
+    
+    public async Task<IEnumerable<Employee>> GetByDepartmentIdAsync(int departmentId)
+    {
+        const string query = "SELECT id, firstname, lastname, departmentid FROM employees WHERE departmentid = @departmentId";
+
+        var employees = new List<Employee>();
+        
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("@departmentId", departmentId);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            employees.Add(new Employee
+            {
+                Id = reader.GetInt32(0),
+                FirstName = reader.GetString(1),
+                LastName = reader.GetString(2),
+                DepartmentId = reader.GetInt32(3)
+            });
+        }
+
+        return employees;
+    }
 
     public async Task AddAsync(Employee entity)
     {
-        const string function = "InsertEmployee"; // Имя функции
+        const string function = "InsertEmployee"; 
 
         await using var connection = await CreateConnectionAsync();
         var query = $"SELECT {function}(@p_firstname, @p_lastname, @p_departmentid)";
@@ -71,8 +96,7 @@ public class EmployeeRepository : BaseRepository, IEmployeeRepository
         var result = await command.ExecuteScalarAsync();
         entity.Id = Convert.ToInt32(result);
     }
-
-
+    
     public async Task UpdateAsync(Employee entity)
     {
         const string procedure = "UpdateEmployee"; 
@@ -103,29 +127,5 @@ public class EmployeeRepository : BaseRepository, IEmployeeRepository
 
         await command.ExecuteNonQueryAsync();
     }
-
-    public async Task<IEnumerable<Employee>> GetByDepartmentIdAsync(int departmentId)
-    {
-        const string query = "SELECT id, firstname, lastname, departmentid FROM employees WHERE departmentid = @departmentId";
-
-        var employees = new List<Employee>();
-        
-        await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@departmentId", departmentId);
-
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            employees.Add(new Employee
-            {
-                Id = reader.GetInt32(0),
-                FirstName = reader.GetString(1),
-                LastName = reader.GetString(2),
-                DepartmentId = reader.GetInt32(3)
-            });
-        }
-
-        return employees;
-    }
+    
 }

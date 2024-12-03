@@ -18,12 +18,11 @@ namespace Application.Services.Auth
             _jwtTokenService = jwtTokenService;
         }
 
-        // Метод для регистрации пользователя
         public async Task<string> RegisterAsync(RegisterDto registerDto)
         {
             var existingUser = await _authRepository.GetUserByEmailAsync(registerDto.Email);
             if (existingUser != null)
-                throw new InvalidOperationException("Пользователь с таким email уже существует.");
+                throw new InvalidOperationException("User with such email already exists.");
 
             var passwordHash = _passwordHashingService.HashPassword(registerDto.Password);
 
@@ -42,15 +41,14 @@ namespace Application.Services.Auth
             return token;
         }
 
-        // Метод для логина пользователя
         public async Task<string> LoginAsync(LoginDto loginDto)
         {
             var user = await _authRepository.GetUserByEmailAsync(loginDto.Email);
             if (user == null)
-                throw new UnauthorizedAccessException("Неверный email или пароль.");
+                throw new UnauthorizedAccessException("Incorrect email.");
 
             if (!_passwordHashingService.VerifyPassword(loginDto.Password, user.PasswordHash))
-                throw new UnauthorizedAccessException("Неверный email или пароль.");
+                throw new UnauthorizedAccessException("Incorrect password.");
 
             var token = _jwtTokenService.GenerateJwtToken(user);
 

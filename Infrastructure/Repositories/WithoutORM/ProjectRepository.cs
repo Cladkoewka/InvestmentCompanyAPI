@@ -8,6 +8,34 @@ namespace Infrastructure.Repositories.WithoutORM;
 public class ProjectRepository : BaseRepository, IProjectRepository
 {
     public ProjectRepository(string connectionString) : base(connectionString) { }
+    
+    public async Task<IEnumerable<Project>> GetAllAsync()
+    {
+        const string query = "SELECT id, name, status, profit, cost, deadline, customerid, editorid FROM projects";
+
+        var projects = new List<Project>();
+
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(query, connection);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            projects.Add(new Project
+            {
+                Id = reader.GetInt32(0),
+                Name = reader.GetString(1),
+                Status = reader.GetString(2),
+                Profit = reader.GetDecimal(3),
+                Cost = reader.GetDecimal(4),
+                Deadline = reader.GetDateTime(5),
+                CustomerId = reader.GetInt32(6),
+                EditorId = reader.GetInt32(7)
+            });
+        }
+
+        return projects;
+    }
 
     public async Task<Project?> GetByIdAsync(int id)
     {
@@ -35,15 +63,51 @@ public class ProjectRepository : BaseRepository, IProjectRepository
 
         return null;
     }
-
-    public async Task<IEnumerable<Project>> GetAllAsync()
+    
+    public async Task<IEnumerable<Project>> GetByCustomerIdAsync(int customerId)
     {
-        const string query = "SELECT id, name, status, profit, cost, deadline, customerid, editorid FROM projects";
+        const string query = @"
+            SELECT id, name, status, profit, cost, deadline, customerid, editorid 
+            FROM projects 
+            WHERE customerid = @customerId";
 
         var projects = new List<Project>();
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("@customerid", customerId);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            projects.Add(new Project
+            {
+                Id = reader.GetInt32(0),
+                Name = reader.GetString(1),
+                Status = reader.GetString(2),
+                Profit = reader.GetDecimal(3),
+                Cost = reader.GetDecimal(4),
+                Deadline = reader.GetDateTime(5),
+                CustomerId = reader.GetInt32(6),
+                EditorId = reader.GetInt32(7)
+            });
+        }
+
+        return projects;
+    }
+
+    public async Task<IEnumerable<Project>> GetByEditorIdAsync(int editorId)
+    {
+        const string query = @"
+            SELECT id, name, status, profit, cost, deadline, customerid, editorid 
+            FROM projects 
+            WHERE editorid = @editorId";
+
+        var projects = new List<Project>();
+
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("@editorid", editorId);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -120,67 +184,5 @@ public class ProjectRepository : BaseRepository, IProjectRepository
         await command.ExecuteNonQueryAsync();
     }
 
-    public async Task<IEnumerable<Project>> GetByCustomerIdAsync(int customerId)
-    {
-        const string query = @"
-            SELECT id, name, status, profit, cost, deadline, customerid, editorid 
-            FROM projects 
-            WHERE customerid = @customerId";
-
-        var projects = new List<Project>();
-
-        await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@customerid", customerId);
-
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            projects.Add(new Project
-            {
-                Id = reader.GetInt32(0),
-                Name = reader.GetString(1),
-                Status = reader.GetString(2),
-                Profit = reader.GetDecimal(3),
-                Cost = reader.GetDecimal(4),
-                Deadline = reader.GetDateTime(5),
-                CustomerId = reader.GetInt32(6),
-                EditorId = reader.GetInt32(7)
-            });
-        }
-
-        return projects;
-    }
-
-    public async Task<IEnumerable<Project>> GetByEditorIdAsync(int editorId)
-    {
-        const string query = @"
-            SELECT id, name, status, profit, cost, deadline, customerid, editorid 
-            FROM projects 
-            WHERE editorid = @editorId";
-
-        var projects = new List<Project>();
-
-        await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@editorid", editorId);
-
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            projects.Add(new Project
-            {
-                Id = reader.GetInt32(0),
-                Name = reader.GetString(1),
-                Status = reader.GetString(2),
-                Profit = reader.GetDecimal(3),
-                Cost = reader.GetDecimal(4),
-                Deadline = reader.GetDateTime(5),
-                CustomerId = reader.GetInt32(6),
-                EditorId = reader.GetInt32(7)
-            });
-        }
-
-        return projects;
-    }
+    
 }

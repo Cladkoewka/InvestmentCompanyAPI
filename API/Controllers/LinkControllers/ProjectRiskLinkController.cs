@@ -15,7 +15,6 @@ namespace API.Controllers.LinkControllers
             _projectRiskLinkRepository = projectRiskLinkRepository;
         }
 
-        // Добавить связь между проектом и риском
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddLinkAsync(int projectId, int riskId)
@@ -31,7 +30,6 @@ namespace API.Controllers.LinkControllers
             }
         }
 
-        // Удалить связь между проектом и риском
         [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<IActionResult> RemoveLinkAsync(int projectId, int riskId)
@@ -47,7 +45,6 @@ namespace API.Controllers.LinkControllers
             }
         }
 
-        // Получить список рисков по ID проекта
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("project/{projectId}")]
         public async Task<IActionResult> GetRisksByProjectIdAsync(int projectId)
@@ -63,7 +60,6 @@ namespace API.Controllers.LinkControllers
             }
         }
 
-        // Получить список проектов по ID риска
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("risk/{riskId}")]
         public async Task<IActionResult> GetProjectsByRiskIdAsync(int riskId)

@@ -13,15 +13,21 @@ namespace Infrastructure.Repositories.WithORM
             _context = context;
         }
 
+        public async Task<IEnumerable<Asset>> GetAllAsync()
+        {
+            return await _context.Assets.ToListAsync();
+        }
+
         public async Task<Asset?> GetByIdAsync(int id)
         {
             return await _context.Assets
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<IEnumerable<Asset>> GetAllAsync()
+        public async Task<Asset?> GetByNameAsync(string name)
         {
-            return await _context.Assets.ToListAsync();
+            return await _context.Assets
+                .FirstOrDefaultAsync(a => a.Name == name);
         }
 
         public async Task AddAsync(Asset entity)
@@ -40,12 +46,6 @@ namespace Infrastructure.Repositories.WithORM
         {
             _context.Assets.Remove(entity);
             await _context.SaveChangesAsync();
-        }
-
-        public async Task<Asset?> GetByNameAsync(string name)
-        {
-            return await _context.Assets
-                .FirstOrDefaultAsync(a => a.Name == name);
         }
     }
 }

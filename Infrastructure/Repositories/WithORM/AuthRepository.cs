@@ -14,23 +14,20 @@ public class AuthRepository : IAuthRepository
         _context = context;
     }
 
-    // Получение пользователя по email
     public async Task<User?> GetUserByEmailAsync(string email)
     {
         return await _context.Users
-            .Include(u => u.Role)  // Загружаем роль пользователя
+            .Include(u => u.Role)  
             .FirstOrDefaultAsync(u => u.Email == email);
     }
 
-    // Получение пользователя по Id
     public async Task<User?> GetUserByIdAsync(int userId)
     {
         return await _context.Users
-            .Include(u => u.Role)  // Загружаем роль пользователя
+            .Include(u => u.Role)  
             .FirstOrDefaultAsync(u => u.Id == userId);
     }
 
-    // Создание нового пользователя
     public async Task CreateUserAsync(User user)
     {
         await _context.Users.AddAsync(user);

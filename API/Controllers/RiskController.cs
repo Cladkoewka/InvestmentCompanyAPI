@@ -16,7 +16,6 @@ namespace API.Controllers
             _riskService = riskService;
         }
 
-        // Получить все риски
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RiskGetDto>>> GetAllAsync()
@@ -25,7 +24,6 @@ namespace API.Controllers
             return Ok(risks);
         }
         
-        // Получить риск по ID
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("{id}")]
         public async Task<ActionResult<RiskGetDto>> GetByIdAsync(int id)
@@ -36,33 +34,32 @@ namespace API.Controllers
 
             return Ok(risk);
         }
-        
 
-        // Добавить новый риск
+        [Authorize(Roles = "Admin,Viewer")]
+        [HttpGet("by-grade/{grade}")]
+        public async Task<ActionResult<IEnumerable<RiskGetDto>>> GetByGradeAsync(int grade)
+        {
+            var risks = await _riskService.GetByGradeAsync(grade);
+            return Ok(risks);
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<RiskGetDto>> AddAsync([FromBody] RiskCreateDto dto)
         {
-            // Проверка валидации
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
             
             var newRisk = await _riskService.AddAsync(dto);
             return StatusCode(201, newRisk);
         }
 
-        // Обновить риск
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateAsync(int id, [FromBody] RiskUpdateDto dto)
         {
-            // Проверка валидации
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
             
             var result = await _riskService.UpdateAsync(id, dto);
             if (!result)
@@ -71,7 +68,6 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // Удалить риск
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(int id)
@@ -81,15 +77,6 @@ namespace API.Controllers
                 return NotFound();
 
             return NoContent();
-        }
-
-        // Получить риски по grade
-        [Authorize(Roles = "Admin,Viewer")]
-        [HttpGet("by-grade/{grade}")]
-        public async Task<ActionResult<IEnumerable<RiskGetDto>>> GetByGradeAsync(int grade)
-        {
-            var risks = await _riskService.GetByGradeAsync(grade);
-            return Ok(risks);
         }
     }
 }

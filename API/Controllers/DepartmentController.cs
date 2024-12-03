@@ -16,7 +16,6 @@ namespace API.Controllers
             _departmentService = departmentService;
         }
 
-        // Получить все отделы
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DepartmentGetDto>>> GetAllAsync()
@@ -25,7 +24,6 @@ namespace API.Controllers
             return Ok(departments);
         }
 
-        // Получить отдел по ID
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("{id:int}")]
         public async Task<ActionResult<DepartmentGetDto>> GetByIdAsync(int id)
@@ -37,7 +35,6 @@ namespace API.Controllers
             return Ok(department);
         }
 
-        // Получить отдел по имени
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("by-name/{name}")]
         public async Task<ActionResult<DepartmentGetDto>> GetByNameAsync(string name)
@@ -49,31 +46,23 @@ namespace API.Controllers
             return Ok(department);
         }
 
-        // Добавить новый отдел
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<DepartmentGetDto>> AddAsync([FromBody] DepartmentCreateDto dto)
         {
-            // Проверка валидации
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
             
             var department = await _departmentService.AddAsync(dto);
             return StatusCode(201, department);
         }
 
-        // Обновить отдел
         [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}")]
         public async Task<ActionResult> UpdateAsync(int id, [FromBody] DepartmentUpdateDto dto)
         {
-            // Проверка валидации
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
             
             var isUpdated = await _departmentService.UpdateAsync(id, dto);
             if (!isUpdated)
@@ -82,7 +71,6 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // Удалить отдел
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> DeleteAsync(int id)

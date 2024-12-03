@@ -10,7 +10,7 @@ public class ProjectRiskLinkRepository : BaseRepository, IProjectRiskLinkReposit
 
     public async Task AddLinkAsync(int projectId, int riskId)
     {
-        const string procedure = "InsertProjectRiskLink"; // Имя процедуры
+        const string procedure = "InsertProjectRiskLink"; 
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(procedure, connection)
@@ -25,7 +25,7 @@ public class ProjectRiskLinkRepository : BaseRepository, IProjectRiskLinkReposit
 
     public async Task RemoveLinkAsync(int projectId, int riskId)
     {
-        const string procedure = "DeleteProjectRiskLink"; // Имя процедуры
+        const string procedure = "DeleteProjectRiskLink"; 
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(procedure, connection)

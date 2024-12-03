@@ -18,14 +18,14 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Asset>().ToTable("Assets"); // Указываем имя существующей таблицы
-        modelBuilder.Entity<User>().ToTable("Users"); // Указываем имя существующей таблицы
-        modelBuilder.Entity<Role>().ToTable("Roles"); // Указываем имя существующей таблицы
+        modelBuilder.Entity<Asset>().ToTable("Assets"); 
+        modelBuilder.Entity<User>().ToTable("Users"); 
+        modelBuilder.Entity<Role>().ToTable("Roles"); 
         
         modelBuilder.Entity<User>()
-            .HasOne(u => u.Role) // Связь с ролью
-            .WithMany()           // У роли может быть много пользователей
-            .HasForeignKey(u => u.RoleId) // Указываем, что внешним ключом является RoleId
-            .OnDelete(DeleteBehavior.Restrict); // Можно указать поведение при удалении
+            .HasOne(u => u.Role)
+            .WithMany()           
+            .HasForeignKey(u => u.RoleId) 
+            .OnDelete(DeleteBehavior.Restrict); 
     }
 }

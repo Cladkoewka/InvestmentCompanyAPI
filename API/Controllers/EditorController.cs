@@ -16,7 +16,6 @@ namespace API.Controllers
             _editorService = editorService;
         }
 
-        // Получить всех редакторов
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EditorGetDto>>> GetAllAsync()
@@ -25,7 +24,6 @@ namespace API.Controllers
             return Ok(editors);
         }
         
-        // Получить редактора по ID
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("{id}")]
         public async Task<ActionResult<EditorGetDto>> GetByIdAsync(int id)
@@ -37,52 +35,6 @@ namespace API.Controllers
             return Ok(editor);
         }
 
-        // Добавить нового редактора
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public async Task<ActionResult<EditorGetDto>> AddAsync([FromBody] EditorCreateDto dto)
-        {
-            // Проверка валидации
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            
-            var editor = await _editorService.AddAsync(dto);
-            return StatusCode(201, editor);
-        }
-
-        // Обновить редактора
-        [Authorize(Roles = "Admin")]
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateAsync(int id, [FromBody] EditorUpdateDto dto)
-        {
-            // Проверка валидации
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            
-            var success = await _editorService.UpdateAsync(id, dto);
-            if (!success)
-                return NotFound();
-
-            return NoContent();
-        }
-
-        // Удалить редактора
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAsync(int id)
-        {
-            var success = await _editorService.DeleteAsync(id);
-            if (!success)
-                return NotFound();
-
-            return NoContent();
-        }
-
-        // Получить редактора по email
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("by-email/{email}")]
         public async Task<ActionResult<EditorGetDto>> GetByEmailAsync(string email)
@@ -92,6 +44,42 @@ namespace API.Controllers
                 return NotFound();
 
             return Ok(editor);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<ActionResult<EditorGetDto>> AddAsync([FromBody] EditorCreateDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var editor = await _editorService.AddAsync(dto);
+            return StatusCode(201, editor);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync(int id, [FromBody] EditorUpdateDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var success = await _editorService.UpdateAsync(id, dto);
+            if (!success)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAsync(int id)
+        {
+            var success = await _editorService.DeleteAsync(id);
+            if (!success)
+                return NotFound();
+
+            return NoContent();
         }
     }
 }

@@ -1,6 +1,6 @@
 namespace Domain.Models;
 
-// Инвестиционный инструмент (валюта, драгметаллы, акции и т.д.)
+// Investment instrument (dollars, gold etc)
 public class Asset
 {
     public int Id { get; set; }

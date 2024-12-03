@@ -17,7 +17,12 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        // Получить риск по ID
+        public async Task<IEnumerable<RiskGetDto>> GetAllAsync()
+        {
+            var risks = await _riskRepository.GetAllAsync();
+            return risks.Select(risk => _mapper.Map<RiskGetDto>(risk));
+        }
+
         public async Task<RiskGetDto?> GetByIdAsync(int id)
         {
             var risk = await _riskRepository.GetByIdAsync(id);
@@ -27,14 +32,12 @@ namespace Application.Services
             return _mapper.Map<RiskGetDto>(risk);
         }
 
-        // Получить все риски
-        public async Task<IEnumerable<RiskGetDto>> GetAllAsync()
+        public async Task<IEnumerable<RiskGetDto>> GetByGradeAsync(int grade)
         {
-            var risks = await _riskRepository.GetAllAsync();
+            var risks = await _riskRepository.GetByGradeAsync(grade);
             return risks.Select(risk => _mapper.Map<RiskGetDto>(risk));
         }
 
-        // Добавить новый риск
         public async Task<RiskGetDto> AddAsync(RiskCreateDto dto)
         {
             var risk = _mapper.Map<Risk>(dto);
@@ -43,7 +46,6 @@ namespace Application.Services
             return _mapper.Map<RiskGetDto>(risk);
         }
 
-        // Обновить риск
         public async Task<bool> UpdateAsync(int id, RiskUpdateDto dto)
         {
             var existingRisk = await _riskRepository.GetByIdAsync(id);
@@ -56,7 +58,6 @@ namespace Application.Services
             return true;
         }
 
-        // Удалить риск
         public async Task<bool> DeleteAsync(int id)
         {
             var existingRisk = await _riskRepository.GetByIdAsync(id);
@@ -65,13 +66,6 @@ namespace Application.Services
 
             await _riskRepository.DeleteAsync(existingRisk);
             return true;
-        }
-
-        // Получить риски по grade
-        public async Task<IEnumerable<RiskGetDto>> GetByGradeAsync(int grade)
-        {
-            var risks = await _riskRepository.GetByGradeAsync(grade);
-            return risks.Select(risk => _mapper.Map<RiskGetDto>(risk));
         }
     }
 }

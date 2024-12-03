@@ -1,3 +1,4 @@
+using System.Text;
 using Application.Interfaces;
 using Application.Interfaces.Auth;
 using Application.Services;
@@ -11,7 +12,9 @@ using Infrastructure;
 using Infrastructure.Repositories.WithORM;
 using Infrastructure.Repositories.WithoutORM;
 using Infrastructure.Repositories.WithoutORM.LinkRepositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace API.Extensions;
@@ -26,11 +29,11 @@ public static class ServiceExtensions
     
     public static void AddRepositories(this IServiceCollection services, string connectionString)
     {
-        // Регистрируем репозитории с использованием ORM (EF Core)
+        // Repositories with ORM (EF Core)
         services.AddScoped<IAssetRepository, AssetRepositoryEfCore>();
         services.AddScoped<IAuthRepository, AuthRepository>();
 
-        // Регистрируем репозитории без ORM
+        // Repositories without ORM
         services.AddSingleton<ICustomerRepository>(new CustomerRepository(connectionString));
         services.AddSingleton<IDepartmentRepository>(new DepartmentRepository(connectionString));
         services.AddSingleton<IEditorRepository>(new EditorRepository(connectionString));
@@ -38,7 +41,7 @@ public static class ServiceExtensions
         services.AddSingleton<IProjectRepository>(new ProjectRepository(connectionString));
         services.AddSingleton<IRiskRepository>(new RiskRepository(connectionString));
 
-        // Регистрируем репозитории с link-таблицами
+        // Link Repositories
         services.AddSingleton<IProjectAssetLinkRepository>(new ProjectAssetLinkRepository(connectionString));
         services.AddSingleton<IProjectDepartmentLinkRepository>(new ProjectDepartmentLinkRepository(connectionString));
         services.AddSingleton<IProjectRiskLinkRepository>(new ProjectRiskLinkRepository(connectionString));
@@ -46,7 +49,7 @@ public static class ServiceExtensions
 
     public static void AddServices(this IServiceCollection services)
     {
-        // Регистрируем сервисы
+        // Services
         services.AddScoped<IAssetService, AssetService>();
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IDepartmentService, DepartmentService>();
@@ -55,6 +58,7 @@ public static class ServiceExtensions
         services.AddScoped<IRiskService, RiskService>();
         services.AddScoped<IProjectService, ProjectService>();
         
+        // AuthServices
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<JwtTokenService>();
         services.AddScoped<PasswordHashingService>();
@@ -62,7 +66,6 @@ public static class ServiceExtensions
 
     public static void AddSwaggerConfiguration(this IServiceCollection services)
     {
-        // Конфигурация Swagger
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
@@ -72,7 +75,6 @@ public static class ServiceExtensions
                 Title = "Investment API"
             });
             
-            // Добавляем схему безопасности для передачи токена
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -80,10 +82,9 @@ public static class ServiceExtensions
                 Type = SecuritySchemeType.ApiKey,
                 BearerFormat = "JWT",
                 Scheme = "Bearer",
-                Description = "Введите ваш JWT токен в формате: Bearer {token}"
+                Description = "JWT token: Bearer {token}"
             });
 
-            // Применяем security scheme ко всем операциям
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -102,15 +103,36 @@ public static class ServiceExtensions
         });
     }
 
-    public static void AddFluentValidationConfiguration(this IServiceCollection services)
-    {
-        // Конфигурация FluentValidation
+    public static void AddFluentValidationConfiguration(this IServiceCollection services) => 
         services.AddFluentValidation().AddValidatorsFromAssembly(typeof(AssetCreateDtoValidator).Assembly);
-    }
 
-    public static void AddAutoMapperConfiguration(this IServiceCollection services)
-    {
-        // Конфигурация AutoMapper
+    public static void AddAutoMapperConfiguration(this IServiceCollection services) => 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    
+    public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["JwtSettings:Issuer"],
+                    ValidAudience = configuration["JwtSettings:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]))
+                };
+            });
+    }
+    
+    public static void AddAuthorizationPolicies(this IServiceCollection services)
+    {
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("ViewerOnly", policy => policy.RequireRole("Viewer"));
+        });
     }
 }

@@ -10,7 +10,7 @@ public class ProjectDepartmentLinkRepository : BaseRepository, IProjectDepartmen
 
     public async Task AddLinkAsync(int projectId, int departmentId)
     {
-        const string procedure = "InsertProjectDepartmentLink"; // Имя процедуры
+        const string procedure = "InsertProjectDepartmentLink"; 
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(procedure, connection)
@@ -25,7 +25,7 @@ public class ProjectDepartmentLinkRepository : BaseRepository, IProjectDepartmen
 
     public async Task RemoveLinkAsync(int projectId, int departmentId)
     {
-        const string procedure = "DeleteProjectDepartmentLink"; // Имя процедуры
+        const string procedure = "DeleteProjectDepartmentLink"; 
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(procedure, connection)
@@ -37,7 +37,6 @@ public class ProjectDepartmentLinkRepository : BaseRepository, IProjectDepartmen
 
         await command.ExecuteNonQueryAsync();
     }
-
 
     public async Task<IEnumerable<int>> GetDepartmentIdsByProjectIdAsync(int projectId)
     {

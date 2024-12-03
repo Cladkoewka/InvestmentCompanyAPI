@@ -9,8 +9,8 @@ public static class AppConfigurationExtensions
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Management API v1");
-                options.RoutePrefix = string.Empty; // Для отображения Swagger на главной странице
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Investment Company API v1");
+                options.RoutePrefix = string.Empty; 
             });
         }
     }

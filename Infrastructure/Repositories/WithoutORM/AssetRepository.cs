@@ -7,30 +7,7 @@ namespace Infrastructure.Repositories.WithoutORM;
 
 public class AssetRepository : BaseRepository, IAssetRepository
 {
-    public AssetRepository(string connectionString) : base(connectionString)
-    {
-    }
-
-    public async Task<Asset?> GetByIdAsync(int id)
-    {
-        const string query = "SELECT id, name FROM assets WHERE id = @id";
-
-        await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", id);
-
-        await using var reader = await command.ExecuteReaderAsync();
-        if (await reader.ReadAsync())
-        {
-            return new Asset
-            {
-                Id = reader.GetInt32(0),
-                Name = reader.GetString(1)
-            };
-        }
-
-        return null;
-    }
+    public AssetRepository(string connectionString) : base(connectionString) { }
 
     public async Task<IEnumerable<Asset>> GetAllAsync()
     {
@@ -54,48 +31,25 @@ public class AssetRepository : BaseRepository, IAssetRepository
         return assets;
     }
 
-    public async Task AddAsync(Asset entity)
+    public async Task<Asset?> GetByIdAsync(int id)
     {
-        const string function = "InsertAsset"; // Имя процедуры
+        const string query = "SELECT id, name FROM assets WHERE id = @id";
 
         await using var connection = await CreateConnectionAsync();
-        
-        var query = $"SELECT {function}(@p_name)";
-
         await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("p_name", entity.Name);
+        command.Parameters.AddWithValue("@id", id);
 
-        var result = await command.ExecuteScalarAsync();
-        entity.Id = Convert.ToInt32(result);;
-    }
-
-    public async Task UpdateAsync(Asset entity)
-    {
-        const string procedure = "UpdateAsset"; // Хранимая процедура для обновления
-
-        await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(procedure, connection)
+        await using var reader = await command.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
         {
-            CommandType = CommandType.StoredProcedure
-        };
-        command.Parameters.AddWithValue("p_name", entity.Name);
-        command.Parameters.AddWithValue("p_id", entity.Id);
+            return new Asset
+            {
+                Id = reader.GetInt32(0),
+                Name = reader.GetString(1)
+            };
+        }
 
-        await command.ExecuteNonQueryAsync();
-    }
-
-    public async Task DeleteAsync(Asset entity)
-    {
-        const string procedure = "DeleteAsset"; // Хранимая процедура для удаления
-
-        await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(procedure, connection)
-        {
-            CommandType = CommandType.StoredProcedure
-        };
-        command.Parameters.AddWithValue("p_id", entity.Id);
-
-        await command.ExecuteNonQueryAsync();
+        return null;
     }
 
     public async Task<Asset> GetByNameAsync(string name)
@@ -118,5 +72,49 @@ public class AssetRepository : BaseRepository, IAssetRepository
         }
 
         return null;
+    }
+
+    public async Task AddAsync(Asset entity)
+    {
+        const string function = "InsertAsset"; 
+
+        await using var connection = await CreateConnectionAsync();
+        
+        var query = $"SELECT {function}(@p_name)";
+
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("p_name", entity.Name);
+
+        var result = await command.ExecuteScalarAsync();
+        entity.Id = Convert.ToInt32(result);;
+    }
+
+    public async Task UpdateAsync(Asset entity)
+    {
+        const string procedure = "UpdateAsset"; 
+
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_name", entity.Name);
+        command.Parameters.AddWithValue("p_id", entity.Id);
+
+        await command.ExecuteNonQueryAsync();
+    }
+
+    public async Task DeleteAsync(Asset entity)
+    {
+        const string procedure = "DeleteAsset"; 
+
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(procedure, connection)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("p_id", entity.Id);
+
+        await command.ExecuteNonQueryAsync();
     }
 }

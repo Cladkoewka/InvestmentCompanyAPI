@@ -10,7 +10,7 @@ public class ProjectAssetLinkRepository : BaseRepository, IProjectAssetLinkRepos
 
     public async Task AddLinkAsync(int projectId, int assetId)
     {
-        const string procedure = "InsertProjectAssetLink"; // Имя процедуры
+        const string procedure = "InsertProjectAssetLink"; 
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(procedure, connection)
@@ -27,7 +27,7 @@ public class ProjectAssetLinkRepository : BaseRepository, IProjectAssetLinkRepos
 
     public async Task RemoveLinkAsync(int projectId, int assetId)
     {
-        const string procedure = "DeleteProjectAssetLink"; // Имя процедуры
+        const string procedure = "DeleteProjectAssetLink"; 
 
         await using var connection = await CreateConnectionAsync();
         await using var command = new NpgsqlCommand(procedure, connection)
@@ -39,7 +39,6 @@ public class ProjectAssetLinkRepository : BaseRepository, IProjectAssetLinkRepos
 
         await command.ExecuteNonQueryAsync();
     }
-
 
     public async Task<IEnumerable<int>> GetAssetIdsByProjectIdAsync(int projectId)
     {

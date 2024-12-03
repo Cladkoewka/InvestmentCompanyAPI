@@ -8,29 +8,7 @@ namespace Infrastructure.Repositories.WithoutORM;
 public class RiskRepository : BaseRepository, IRiskRepository
 {
     public RiskRepository(string connectionString) : base(connectionString) { }
-
-    public async Task<Risk?> GetByIdAsync(int id)
-    {
-        const string query = "SELECT id, type, grade FROM risks WHERE id = @id";
-
-        await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@id", id);
-
-        await using var reader = await command.ExecuteReaderAsync();
-        if (await reader.ReadAsync())
-        {
-            return new Risk
-            {
-                Id = reader.GetInt32(0),
-                Type = reader.GetString(1),
-                Grade = reader.GetInt32(2)
-            };
-        }
-
-        return null;
-    }
-
+    
     public async Task<IEnumerable<Risk>> GetAllAsync()
     {
         const string query = "SELECT id, type, grade FROM risks";
@@ -54,9 +32,55 @@ public class RiskRepository : BaseRepository, IRiskRepository
         return risks;
     }
 
+    public async Task<Risk?> GetByIdAsync(int id)
+    {
+        const string query = "SELECT id, type, grade FROM risks WHERE id = @id";
+
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("@id", id);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            return new Risk
+            {
+                Id = reader.GetInt32(0),
+                Type = reader.GetString(1),
+                Grade = reader.GetInt32(2)
+            };
+        }
+
+        return null;
+    }
+    
+    public async Task<IEnumerable<Risk>> GetByGradeAsync(int grade)
+    {
+        const string query = "SELECT id, type, grade FROM risks WHERE grade = @grade";
+
+        var risks = new List<Risk>();
+
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("@grade", grade);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            risks.Add(new Risk
+            {
+                Id = reader.GetInt32(0),
+                Type = reader.GetString(1),
+                Grade = reader.GetInt32(2)
+            });
+        }
+
+        return risks;
+    }
+
     public async Task AddAsync(Risk entity)
     {
-        const string function = "InsertRisk"; // Имя функции
+        const string function = "InsertRisk"; 
 
         await using var connection = await CreateConnectionAsync();
         var query = $"SELECT {function}(@p_type, @p_grade)";
@@ -68,7 +92,6 @@ public class RiskRepository : BaseRepository, IRiskRepository
         var result = await command.ExecuteScalarAsync();
         entity.Id = Convert.ToInt32(result);
     }
-
 
     public async Task UpdateAsync(Risk entity)
     {
@@ -100,27 +123,5 @@ public class RiskRepository : BaseRepository, IRiskRepository
         await command.ExecuteNonQueryAsync();
     }
 
-    public async Task<IEnumerable<Risk>> GetByGradeAsync(int grade)
-    {
-        const string query = "SELECT id, type, grade FROM risks WHERE grade = @grade";
-
-        var risks = new List<Risk>();
-
-        await using var connection = await CreateConnectionAsync();
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@grade", grade);
-
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            risks.Add(new Risk
-            {
-                Id = reader.GetInt32(0),
-                Type = reader.GetString(1),
-                Grade = reader.GetInt32(2)
-            });
-        }
-
-        return risks;
-    }
+    
 }
