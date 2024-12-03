@@ -14,3 +14,4 @@ C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данн
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\Application\obj\Debug\net8.0\refint\Application.dll
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\Application\obj\Debug\net8.0\Application.pdb
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\Application\obj\Debug\net8.0\ref\Application.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\Application\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Abstractions.dll

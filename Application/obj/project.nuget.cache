@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "jc5CCdtiZQ+Sp4ehiMLomgLw8a7UMT5milpbgMJxERTJfHvBXc3WIvedH7OL8MzuPFH1VQv9lYR7XlmP5zvCOw==",
+  "dgSpecHash": "wl1YL2hO45wk+ly+6euzTHUYOlpO5GbvzNhgiiuar1Ag6ZUCcT09CkZd+ghdSqnS9CD6PKUV5evDaKrJki+tVg==",
   "success": true,
   "projectFilePath": "C:\\Users\\semen\\Desktop\\_\\Папки Осень 2024\\Учеба\\Базы данных 5 сем\\TR\\Investment company\\Application\\Application.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,11 @@
     "C:\\Users\\semen\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\6.0.0\\microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",
     "C:\\Users\\semen\\.nuget\\packages\\microsoft.extensions.options\\6.0.0\\microsoft.extensions.options.6.0.0.nupkg.sha512",
     "C:\\Users\\semen\\.nuget\\packages\\microsoft.extensions.primitives\\6.0.0\\microsoft.extensions.primitives.6.0.0.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\microsoft.identitymodel.abstractions\\7.1.2\\microsoft.identitymodel.abstractions.7.1.2.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\7.1.2\\microsoft.identitymodel.jsonwebtokens.7.1.2.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\microsoft.identitymodel.logging\\7.1.2\\microsoft.identitymodel.logging.7.1.2.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\microsoft.identitymodel.tokens\\7.1.2\\microsoft.identitymodel.tokens.7.1.2.nupkg.sha512",
+    "C:\\Users\\semen\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.1.2\\system.identitymodel.tokens.jwt.7.1.2.nupkg.sha512",
     "C:\\Users\\semen\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
   ],
   "logs": []

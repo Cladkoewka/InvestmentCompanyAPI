@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -16,6 +17,7 @@ namespace API.Controllers
         }
         
         // Получить всех сотрудников
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -24,6 +26,7 @@ namespace API.Controllers
         }
 
         // Получить сотрудника по ID
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -35,6 +38,7 @@ namespace API.Controllers
         }
 
         // Добавить нового сотрудника
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] EmployeeCreateDto dto)
         {
@@ -49,6 +53,7 @@ namespace API.Controllers
         }
 
         // Обновить сотрудника
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] EmployeeUpdateDto dto)
         {
@@ -66,6 +71,7 @@ namespace API.Controllers
         }
 
         // Удалить сотрудника
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
@@ -77,6 +83,7 @@ namespace API.Controllers
         }
 
         // Получить сотрудников по departmentId
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("by-department/{departmentId}")]
         public async Task<IActionResult> GetByDepartmentIdAsync(int departmentId)
         {

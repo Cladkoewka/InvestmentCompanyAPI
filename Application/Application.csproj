@@ -13,6 +13,14 @@
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="13.0.1" />
       <PackageReference Include="FluentValidation" Version="11.11.0" />
+      <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.1.2" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
+        <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.3\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

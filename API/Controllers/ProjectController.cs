@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -16,6 +17,7 @@ namespace API.Controllers
         }
         
         // Получить все проекты
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectGetDto>>> GetAllAsync()
         {
@@ -24,6 +26,7 @@ namespace API.Controllers
         }
 
         // Получить проект по ID
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("{id}")]
         public async Task<ActionResult<ProjectGetDto>> GetByIdAsync(int id)
         {
@@ -36,6 +39,7 @@ namespace API.Controllers
         
 
         // Добавить новый проект
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<ProjectGetDto>> AddAsync([FromBody] ProjectCreateDto dto)
         {
@@ -50,6 +54,7 @@ namespace API.Controllers
         }
 
         // Обновить проект
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateAsync(int id, [FromBody] ProjectUpdateDto dto)
         {
@@ -67,6 +72,7 @@ namespace API.Controllers
         }
 
         // Удалить проект
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
@@ -78,6 +84,7 @@ namespace API.Controllers
         }
 
         // Получить проекты по CustomerId
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("customer/{customerId}")]
         public async Task<ActionResult<IEnumerable<ProjectGetDto>>> GetByCustomerIdAsync(int customerId)
         {
@@ -86,6 +93,7 @@ namespace API.Controllers
         }
 
         // Получить проекты по EditorId
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("editor/{editorId}")]
         public async Task<ActionResult<IEnumerable<ProjectGetDto>>> GetByEditorIdAsync(int editorId)
         {

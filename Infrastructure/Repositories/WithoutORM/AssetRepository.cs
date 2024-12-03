@@ -67,8 +67,6 @@ public class AssetRepository : BaseRepository, IAssetRepository
 
         var result = await command.ExecuteScalarAsync();
         entity.Id = Convert.ToInt32(result);;
-
-        await command.ExecuteNonQueryAsync();
     }
 
     public async Task UpdateAsync(Asset entity)

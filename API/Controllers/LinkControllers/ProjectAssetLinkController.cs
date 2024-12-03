@@ -1,4 +1,5 @@
 using Domain.Interfaces.LinkRepositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.LinkControllers
@@ -15,6 +16,7 @@ namespace API.Controllers.LinkControllers
         }
 
         // Добавить связь между проектом и активом
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddLinkAsync(int projectId, int assetId)
         {
@@ -45,6 +47,7 @@ namespace API.Controllers.LinkControllers
         }
 
         // Получить список активов по ID проекта
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("project/{projectId}")]
         public async Task<IActionResult> GetAssetsByProjectIdAsync(int projectId)
         {
@@ -60,6 +63,7 @@ namespace API.Controllers.LinkControllers
         }
 
         // Получить список проектов по ID актива
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("asset/{assetId}")]
         public async Task<IActionResult> GetProjectsByAssetIdAsync(int assetId)
         {

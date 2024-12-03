@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -16,6 +17,7 @@ namespace API.Controllers
         }
 
         // Получить всех редакторов
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EditorGetDto>>> GetAllAsync()
         {
@@ -24,6 +26,7 @@ namespace API.Controllers
         }
         
         // Получить редактора по ID
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("{id}")]
         public async Task<ActionResult<EditorGetDto>> GetByIdAsync(int id)
         {
@@ -35,6 +38,7 @@ namespace API.Controllers
         }
 
         // Добавить нового редактора
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<EditorGetDto>> AddAsync([FromBody] EditorCreateDto dto)
         {
@@ -49,6 +53,7 @@ namespace API.Controllers
         }
 
         // Обновить редактора
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateAsync(int id, [FromBody] EditorUpdateDto dto)
         {
@@ -66,6 +71,7 @@ namespace API.Controllers
         }
 
         // Удалить редактора
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
@@ -77,6 +83,7 @@ namespace API.Controllers
         }
 
         // Получить редактора по email
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("by-email/{email}")]
         public async Task<ActionResult<EditorGetDto>> GetByEmailAsync(string email)
         {

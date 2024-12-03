@@ -1,4 +1,5 @@
 using Domain.Interfaces.LinkRepositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.LinkControllers
@@ -15,6 +16,7 @@ namespace API.Controllers.LinkControllers
         }
 
         // Добавить связь между проектом и департаментом
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddLinkAsync(int projectId, int departmentId)
         {
@@ -30,6 +32,7 @@ namespace API.Controllers.LinkControllers
         }
 
         // Удалить связь между проектом и департаментом
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<IActionResult> RemoveLinkAsync(int projectId, int departmentId)
         {
@@ -45,6 +48,7 @@ namespace API.Controllers.LinkControllers
         }
 
         // Получить список департаментов по ID проекта
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("project/{projectId}")]
         public async Task<IActionResult> GetDepartmentsByProjectIdAsync(int projectId)
         {
@@ -60,6 +64,7 @@ namespace API.Controllers.LinkControllers
         }
 
         // Получить список проектов по ID департамента
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("department/{departmentId}")]
         public async Task<IActionResult> GetProjectsByDepartmentIdAsync(int departmentId)
         {
