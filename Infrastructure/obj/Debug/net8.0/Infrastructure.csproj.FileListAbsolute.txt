@@ -14,3 +14,5 @@ C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данн
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\Infrastructure\obj\Debug\net8.0\refint\Infrastructure.dll
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\Infrastructure\obj\Debug\net8.0\Infrastructure.pdb
 C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\Infrastructure\obj\Debug\net8.0\ref\Infrastructure.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\Infrastructure\bin\Debug\net8.0\Application.dll
+C:\Users\semen\Desktop\_\Папки Осень 2024\Учеба\Базы данных 5 сем\TR\Investment company\Infrastructure\bin\Debug\net8.0\Application.pdb

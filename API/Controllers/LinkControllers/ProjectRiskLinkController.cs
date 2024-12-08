@@ -1,3 +1,4 @@
+using Application.DTOs;
 using Domain.Interfaces.LinkRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,12 @@ namespace API.Controllers.LinkControllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddLinkAsync(int projectId, int riskId)
+        public async Task<IActionResult> AddLinkAsync([FromBody] ProjectRiskLinkDto dto)
         {
             try
             {
-                await _projectRiskLinkRepository.AddLinkAsync(projectId, riskId);
-                return Ok(new { Message = $"Successfully linked project {projectId} and risk {riskId}" });
+                await _projectRiskLinkRepository.AddLinkAsync(dto.projectId, dto.riskId);
+                return Ok(new { Message = $"Successfully linked project {dto.projectId} and risk {dto.riskId}" });
             }
             catch (Exception ex)
             {
@@ -32,12 +33,12 @@ namespace API.Controllers.LinkControllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete]
-        public async Task<IActionResult> RemoveLinkAsync(int projectId, int riskId)
+        public async Task<IActionResult> RemoveLinkAsync([FromBody] ProjectRiskLinkDto dto)
         {
             try
             {
-                await _projectRiskLinkRepository.RemoveLinkAsync(projectId, riskId);
-                return Ok(new { Message = $"Successfully removed link between project {projectId} and risk {riskId}" });
+                await _projectRiskLinkRepository.RemoveLinkAsync(dto.projectId, dto.riskId);
+                return Ok(new { Message = $"Successfully removed link between project {dto.projectId} and risk {dto.riskId}" });
             }
             catch (Exception ex)
             {
@@ -72,6 +73,21 @@ namespace API.Controllers.LinkControllers
             catch (Exception ex)
             {
                 return BadRequest(new { Message = "Failed to retrieve projects", Error = ex.Message });
+            }
+        }
+        
+        [Authorize(Roles = "Admin,Viewer")]
+        [HttpDelete("project/{projectId}")]
+        public async Task<IActionResult> RemoveRisksByProjectIdAsync(int projectId)
+        {
+            try
+            {
+                await _projectRiskLinkRepository.RemoveRisksByProjectIdAsync(projectId);
+                return Ok(new { Message = $"Successfully removed links" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to remove link", Error = ex.Message });
             }
         }
     }

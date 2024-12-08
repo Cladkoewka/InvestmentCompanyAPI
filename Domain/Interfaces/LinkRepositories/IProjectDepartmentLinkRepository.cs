@@ -6,4 +6,5 @@ public interface IProjectDepartmentLinkRepository
     Task RemoveLinkAsync(int projectId, int departmentId);               
     Task<IEnumerable<int>> GetDepartmentIdsByProjectIdAsync(int projectId); 
     Task<IEnumerable<int>> GetProjectIdsByDepartmentIdAsync(int departmentId);
+    Task RemoveDepartmentsByProjectIdAsync(int projectId);
 }

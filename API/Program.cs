@@ -11,6 +11,8 @@ var connectionString = configuration.GetConnectionString("DefaultConnection");
 
 var secretKey = builder.Configuration["JwtSettings:SecretKey"];
 
+services.AddCorsPolicy();
+
 // JWT authentication
 services.AddJwtAuthentication(configuration);
 
@@ -39,6 +41,8 @@ services.AddControllers();
 
 
 var app = builder.Build();
+
+app.UseCors("AllowFrontend");
 
 // Authentication & Authorization 
 app.UseAuthentication(); 

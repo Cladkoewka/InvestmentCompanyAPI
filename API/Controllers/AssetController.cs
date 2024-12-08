@@ -38,7 +38,7 @@ namespace API.Controllers
 
         [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("by-name/{name}")]
-        public async Task<ActionResult<IEnumerable<AssetGetDto>>> GetByNameAsync(string name)
+        public async Task<ActionResult<IEnumerable<AssetGetDto>>> GetByNameAasync(string name)
         {
             var assets = await _assetService.GetByNameAsync(name);
             return Ok(assets); 

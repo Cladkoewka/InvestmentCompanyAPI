@@ -76,4 +76,15 @@ public class ProjectRiskLinkRepository : BaseRepository, IProjectRiskLinkReposit
 
         return projectIds;
     }
+
+    public async Task RemoveRisksByProjectIdAsync(int projectId)
+    {
+        const string query = "DELETE FROM ProjectRiskLinks WHERE projectid = @projectId";
+
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("@projectId", projectId);
+
+        await command.ExecuteNonQueryAsync();
+    }
 }

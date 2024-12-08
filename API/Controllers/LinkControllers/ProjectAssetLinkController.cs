@@ -1,3 +1,4 @@
+using Application.DTOs;
 using Domain.Interfaces.LinkRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,12 @@ namespace API.Controllers.LinkControllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddLinkAsync(int projectId, int assetId)
+        public async Task<IActionResult> AddLinkAsync([FromBody] ProjectAssetLinkDto dto)
         {
             try
             {
-                await _projectAssetLinkRepository.AddLinkAsync(projectId, assetId);
-                return Ok(new { Message = $"Successfully linked project {projectId} and asset {assetId}" });
+                await _projectAssetLinkRepository.AddLinkAsync(dto.projectId, dto.assetId);
+                return Ok(new { Message = $"Successfully linked project {dto.projectId} and asset {dto.assetId}" });
             }
             catch (Exception ex)
             {
@@ -30,13 +31,14 @@ namespace API.Controllers.LinkControllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
-        public async Task<IActionResult> RemoveLinkAsync(int projectId, int assetId)
+        public async Task<IActionResult> RemoveLinkAsync([FromBody] ProjectAssetLinkDto dto)
         {
             try
             {
-                await _projectAssetLinkRepository.RemoveLinkAsync(projectId, assetId);
-                return Ok(new { Message = $"Successfully removed link between project {projectId} and asset {assetId}" });
+                await _projectAssetLinkRepository.RemoveLinkAsync(dto.projectId, dto.assetId);
+                return Ok(new { Message = $"Successfully removed link between project {dto.projectId} and asset {dto.assetId}" });
             }
             catch (Exception ex)
             {
@@ -71,6 +73,21 @@ namespace API.Controllers.LinkControllers
             catch (Exception ex)
             {
                 return BadRequest(new { Message = "Failed to retrieve projects", Error = ex.Message });
+            }
+        }
+
+        [Authorize(Roles = "Admin,Viewer")]
+        [HttpDelete("project/{projectId}")]
+        public async Task<IActionResult> RemoveAssetsByProjectIdAsync(int projectId)
+        {
+            try
+            {
+                await _projectAssetLinkRepository.RemoveLinksByProjectIdAsync(projectId);
+                return Ok(new { Message = $"Successfully removed links" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Failed to remove link", Error = ex.Message });
             }
         }
     }

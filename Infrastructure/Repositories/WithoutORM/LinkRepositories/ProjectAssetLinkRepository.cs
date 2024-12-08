@@ -77,4 +77,16 @@ public class ProjectAssetLinkRepository : BaseRepository, IProjectAssetLinkRepos
 
         return projectIds;
     }
+
+    public async Task RemoveLinksByProjectIdAsync(int projectId)
+    {
+        const string query = "DELETE FROM ProjectAssetLinks WHERE projectid = @projectId";
+
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("@projectId", projectId);
+
+        await command.ExecuteNonQueryAsync();
+    }
+
 }

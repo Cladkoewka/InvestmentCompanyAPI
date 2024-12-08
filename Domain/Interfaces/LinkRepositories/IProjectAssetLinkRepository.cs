@@ -6,4 +6,5 @@ public interface IProjectAssetLinkRepository
     Task RemoveLinkAsync(int projectId, int assetId);               
     Task<IEnumerable<int>> GetAssetIdsByProjectIdAsync(int projectId);
     Task<IEnumerable<int>> GetProjectIdsByAssetIdAsync(int assetId);
+    Task RemoveLinksByProjectIdAsync(int projectId);
 }

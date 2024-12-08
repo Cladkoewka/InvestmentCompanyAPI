@@ -40,6 +40,7 @@ public static class ServiceExtensions
         services.AddSingleton<IEmployeeRepository>(new EmployeeRepository(connectionString));
         services.AddSingleton<IProjectRepository>(new ProjectRepository(connectionString));
         services.AddSingleton<IRiskRepository>(new RiskRepository(connectionString));
+        services.AddSingleton<FunctionalRepository>(new FunctionalRepository(connectionString));
 
         // Link Repositories
         services.AddSingleton<IProjectAssetLinkRepository>(new ProjectAssetLinkRepository(connectionString));
@@ -133,6 +134,20 @@ public static class ServiceExtensions
         {
             options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
             options.AddPolicy("ViewerOnly", policy => policy.RequireRole("Viewer"));
+        });
+    }
+    
+    public static void AddCorsPolicy(this IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontend",
+                policy =>
+                {
+                    policy.WithOrigins("http://localhost:5173") 
+                        .AllowAnyHeader()  
+                        .AllowAnyMethod();
+                });
         });
     }
 }

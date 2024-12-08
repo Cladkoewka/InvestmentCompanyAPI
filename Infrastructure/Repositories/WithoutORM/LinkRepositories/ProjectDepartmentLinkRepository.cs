@@ -75,4 +75,15 @@ public class ProjectDepartmentLinkRepository : BaseRepository, IProjectDepartmen
 
         return projectIds;
     }
+
+    public async Task RemoveDepartmentsByProjectIdAsync(int projectId)
+    {
+        const string query = "DELETE FROM ProjectDepartmentLinks WHERE projectid = @projectId";
+
+        await using var connection = await CreateConnectionAsync();
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("@projectId", projectId);
+
+        await command.ExecuteNonQueryAsync();
+    }
 }
