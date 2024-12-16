@@ -7,14 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-var connectionString = configuration.GetConnectionString("DefaultConnection");
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");/*"User ID=postgres;Password=1339;Port=5432;Database=to-do;Host=localhost"*/;
+var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
+    
 
-var secretKey = builder.Configuration["JwtSettings:SecretKey"];
-
-services.AddCorsPolicy();
+services.AddCorsPolicy(frontendUrl);
 
 // JWT authentication
-services.AddJwtAuthentication(configuration);
+services.AddJwtAuthentication(jwtKey);
 
 // Authorization
 services.AddAuthorizationPolicies();

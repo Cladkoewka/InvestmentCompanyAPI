@@ -110,20 +110,18 @@ public static class ServiceExtensions
     public static void AddAutoMapperConfiguration(this IServiceCollection services) => 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     
-    public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static void AddJwtAuthentication(this IServiceCollection services, string jwtKey)
     {
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["JwtSettings:Issuer"],
-                    ValidAudience = configuration["JwtSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
                 };
             });
     }
@@ -137,14 +135,14 @@ public static class ServiceExtensions
         });
     }
     
-    public static void AddCorsPolicy(this IServiceCollection services)
+    public static void AddCorsPolicy(this IServiceCollection services, string frontendUrl)
     {
         services.AddCors(options =>
         {
             options.AddPolicy("AllowFrontend",
                 policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173") 
+                    policy.WithOrigins(frontendUrl) 
                         .AllowAnyHeader()  
                         .AllowAnyMethod();
                 });
